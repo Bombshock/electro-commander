@@ -38,7 +38,7 @@
         </md-fab-toolbar>
     </div>
 
-    <div ng-if="packageJSON">
+    <div ng-if="packageJSON && !activeTab.child">
         <md-menu md-position-mode="target-right target">
             <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)" md-menu-origin>
                 NPM
@@ -94,7 +94,7 @@
     <md-tab ng-repeat="tab in tabs" label="{{tab.name || $index + 1}}" flex flex-grow scroll-down
             md-on-select="tab.onSelect()">
         <div flex class="console">
-            <pre data-ng-repeat="line in tab.lines" class="{{line.type}}">{{line.toString()}}</pre>
+            <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
         </div>
     </md-tab>
 </md-tabs>

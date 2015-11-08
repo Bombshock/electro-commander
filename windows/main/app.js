@@ -5,6 +5,7 @@
 
     var Q = require("q");
     var fs = require("fs");
+    var colorSet = require(__dirname + "/colors.json");
 
     angular.module("app", ["ngMaterial"]);
 
@@ -52,8 +53,9 @@
         "$scope",
         "$window",
         "$timeout",
+        "$sce",
         "bash",
-        function ($scope, $window, $timeout, bash) {
+        function ($scope, $window, $timeout, $sce, bash) {
 
             var remote = require("remote");
             var utf8 = require('utf8');
@@ -404,6 +406,40 @@
                     execute(input, tab);
                 }
             }
+
+            function CMDMessage(message, type) {
+                this.message = message || '';
+                this.type = type || CMDMessage.TYPE_DEFAULT;
+            }
+
+            CMDMessage.TYPE_ERROR = 'error';
+            CMDMessage.TYPE_DEFAULT = 'default';
+            CMDMessage.TYPE_COMMAND = 'command';
+
+            CMDMessage.prototype.toString = function () {
+                var open = 0;
+                var replaced = this.message.replace(/(\[\d+m)/ig, function (int) {
+                    int = int.replace("[", "");
+                    int = parseInt(int);
+                    var out = "";
+                    if (int === 0) {
+                        for (var i = 0; i < open; i++) {
+                            out += "</span>";
+                        }
+                        open = 0;
+                    } else {
+                        open++;
+                        out += "<span style=\"" + colorSet[int] + "\">"
+                    }
+                    return out;
+                });
+
+                for (var i = 0; i < open; i++) {
+                    replaced += "</span>";
+                }
+
+                return $sce.trustAsHtml(replaced);
+            };
         }
     ]);
 
@@ -415,18 +451,5 @@
             });
         }
     ]);
-
-    function CMDMessage(message, type) {
-        this.message = message || '';
-        this.type = type || CMDMessage.TYPE_DEFAULT;
-    }
-
-    CMDMessage.prototype.toString = function () {
-        return this.message;
-    };
-
-    CMDMessage.TYPE_ERROR = 'error';
-    CMDMessage.TYPE_DEFAULT = 'default';
-    CMDMessage.TYPE_COMMAND = 'command';
 
 })();

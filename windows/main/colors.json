@@ -1,0 +1,19 @@
+{
+  "39" : "color: inherit",
+  "30" : "color: black",
+  "31" : "color: red",
+  "32" : "color: green",
+  "33" : "color: yellow",
+  "34" : "color: blue",
+  "35" : "color: magenta",
+  "36" : "color: cyan",
+  "37" : "color: lightgray",
+  "90" : "color: darkgrey",
+  "91" : "color: lightred",
+  "92" : "color: lightgreen",
+  "93" : "color: lightyellow",
+  "94" : "color: lightblue",
+  "95" : "color: lightmagenta",
+  "96" : "color: lightcyan",
+  "97" : "color: white"
+}

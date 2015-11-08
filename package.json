@@ -1,0 +1,22 @@
+{
+  "name": "electron",
+  "version": "0.1.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo yay"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "electron-prebuilt": "latest"
+  },
+  "dependencies": {
+    "include-all": "latest",
+    "moment": "latest",
+    "q": "latest",
+    "sprintf-js": "latest",
+    "utf8": "latest"
+  }
+}

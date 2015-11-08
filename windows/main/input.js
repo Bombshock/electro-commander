@@ -64,9 +64,10 @@
                         args.shift();
 
                         var dir = tab.cwd;
+                        var lastArg = "";
 
                         if (args.length > 0) {
-                            var lastArg = args[args.length - 1];
+                            lastArg = args[args.length - 1];
                             dir = path.resolve(tab.cwd, lastArg);
                             console.log("lastArg", lastArg);
                             console.log("dir", dir);
@@ -77,7 +78,7 @@
 
                         try {
                             fsCache[dir] = stats = fsCache[dir] || fs.statSync(dir);
-                            if (selected.length === 0 && tab.input[tab.input.length - 1] !== "/") {
+                            if (selected.length === 0 && tab.input[tab.input.length - 1] !== "/" && lastArg !== "") {
                                 tab.input += "/";
                             }
                         } catch (e) {
@@ -108,6 +109,10 @@
                             }
 
                             var index = list.indexOf(selected) + 1;
+
+                            if (lastArg === "" && tab.input[tab.input.length - 1] !== " ") {
+                                tab.input += " ";
+                            }
 
                             if (list[index]) {
                                 tab.input += list[index];

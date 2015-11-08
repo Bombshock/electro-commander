@@ -4,15 +4,13 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "electron .",
-    "test": "echo yay"
+    "start": "node start.js",
+    "test": "echo Nope, no tests"
   },
   "author": "",
   "license": "",
-  "devDependencies": {
-    "electron-prebuilt": "latest"
-  },
   "dependencies": {
+    "electron-prebuilt": "latest",
     "include-all": "latest",
     "moment": "latest",
     "q": "latest",

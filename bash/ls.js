@@ -45,6 +45,10 @@ module.exports = function (args, stdout, stderr) {
         .catch(stderr);
 };
 
+module.exports.help = [
+    require("sprintf-js").sprintf("%-30s %s", "ls [path]", "lists all files and folders in current working directory OR [path] if given.")
+];
+
 function humanFileSize(bytes, si) {
     var thresh = si ? 1000 : 1024;
     if (Math.abs(bytes) < thresh) {

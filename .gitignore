@@ -1,6 +1,7 @@
 node_modules
 bower_components
 .idea
+windows/main/tabs.json
 
 
 # Windows image file caches

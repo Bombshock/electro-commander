@@ -16,6 +16,7 @@
     "open": "0.0.5",
     "q": "latest",
     "sprintf-js": "latest",
-    "utf8": "latest"
+    "utf8": "latest",
+    "winreg": "0.0.12"
   }
 }

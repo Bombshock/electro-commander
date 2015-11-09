@@ -16,6 +16,8 @@
   var electron_ipc = require('ipc');
   var masterIpc;
 
+  require("./scripts/registry.js")();
+
   var ipc = new Ipc({
     port: 7100,
     host: 'localhost',
@@ -29,28 +31,28 @@
 
   app.on('ready', function () {
     ipc
-      .on('listening', function (server) {
-        masterProcess();
-        ipc.on('data', function (data, conn, server) {
-          if (masterIpc) {
-            console.log('got data:', data);
-            masterIpc.send('argv', data);
-          }
-          conn.write(true);
-        });
-      })
-      .once('connect', function (conn) {
-        conn.write(process.argv);
-        ipc.on('data', function (data, conn) {
-          if (data === true) {
-            conn.end();
-          }
-        });
-        ipc.on('close', function (had_error, conn) {
-          process.exit(0);
-        });
-      })
-      .start();
+        .on('listening', function (server) {
+          masterProcess();
+          ipc.on('data', function (data, conn, server) {
+            if (masterIpc) {
+              console.log('got data:', data);
+              masterIpc.send('argv', data);
+            }
+            conn.write(true);
+          });
+        })
+        .once('connect', function (conn) {
+          conn.write(process.argv);
+          ipc.on('data', function (data, conn) {
+            if (data === true) {
+              conn.end();
+            }
+          });
+          ipc.on('close', function (had_error, conn) {
+            process.exit(0);
+          });
+        })
+        .start();
   });
 
   function masterProcess() {
@@ -70,6 +72,8 @@
     } catch (e) {
       //config not found? like i give a fuck
     }
+
+    config.icon = __dirname + '/resources/icon.png';
 
     mainWindow = new BrowserWindow(config);
     mainWindow.loadUrl('file://' + __dirname + '/windows/main/index.html');

@@ -29,14 +29,14 @@
 
       // Dark Theme
       $mdThemingProvider.theme('darkTheme')
-        .dark()
-        .accentPalette('grey', {
-          'default': '200'
-        })
-        .primaryPalette('orange', {
-          'default': '800'
-        })
-        .backgroundPalette('black');
+          .dark()
+          .accentPalette('grey', {
+            'default': '200'
+          })
+          .primaryPalette('orange', {
+            'default': '800'
+          })
+          .backgroundPalette('black');
 
       $mdThemingProvider.setDefaultTheme('darkTheme');
     }
@@ -75,6 +75,7 @@
       $scope.process = process;
       $scope.currentWindow = remote.getCurrentWindow();
       $scope.selectedIndex = storage.selectedIndex || 0;
+      $scope.__dirname = __dirname;
 
       $scope.lines = [];
       $scope.history = [];
@@ -115,7 +116,11 @@
           require("child_process").exec("git branch", {
             cwd: $scope.activeTab.cwd
           }, function (error, stdout) {
-            $scope.activeTab.branch = stdout.replace("*", "").trim();
+            if (error) {
+              delete $scope.activeTab.branch;
+            } else {
+              $scope.activeTab.branch = stdout.replace("*", "").trim();
+            }
           });
         } else {
           delete $scope.activeTab.branch;
@@ -127,7 +132,9 @@
       console.log("$scope.currentWindow", $scope.currentWindow);
 
       if ($scope.tabs.length === 0) {
-        execute("$help", newTab());
+        execute("$help", newTab("desktop"));
+      } else if ($scope.tabs[0].type !== "desktop") {
+        $scope.tabs.unshift(newTab("desktop"));
       } else {
         for (var i = 0; i < $scope.tabs.length; i++) {
           var tab = $scope.tabs[i];
@@ -175,14 +182,16 @@
 
       function removeTab(tab) {
         var index = $scope.tabs.indexOf(tab);
-        $scope.tabs.splice(index, 1);
-        if ($scope.tabs.length === 0) {
-          process.chdir(process.env.CWD || process.env.USERPROFILE);
-          var $newTab = newTab();
-          execute("$help", $newTab);
-          $scope.activeTab = $newTab;
+        if (index !== 0) {
+          $scope.tabs.splice(index, 1);
+          if ($scope.tabs.length === 0) {
+            process.chdir(process.env.CWD || process.env.USERPROFILE);
+            var $newTab = newTab();
+            execute("$help", $newTab);
+            $scope.activeTab = $newTab;
+          }
+          saveTabs();
         }
-        saveTabs();
       }
 
       function getStoreage() {
@@ -280,12 +289,13 @@
         }
       }
 
-      function newTab() {
+      function newTab(type) {
         var tab = {
           cwd: process.cwd(),
           lines: [],
           history: [],
-          child: null
+          child: null,
+          type: type
         };
 
         $scope.tabs.push(tab);
@@ -309,7 +319,8 @@
             history: tab.history,
             cwd: tab.cwd,
             name: tab.name,
-            bootstrap: tab.bootstrap
+            bootstrap: tab.bootstrap,
+            type: tab.type
           });
           console.log("TAB SAVE :: name: %s | lines: %s", tab.name, tab.lines.length);
         }
@@ -351,7 +362,8 @@
           tab.history.push(input);
         }
 
-        tab.lines.push(new CMDMessage(cwd + "> " + input, CMDMessage.TYPE_COMMAND));
+        var message = new CMDMessage(cwd + "> " + input, CMDMessage.TYPE_COMMAND);
+        tab.lines.push(message);
         tab.historyIndex = null;
 
         if (!line) {
@@ -363,11 +375,11 @@
 
         if (bin in bash) {
           Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
-            .finally(function () {
-              $timeout(function () {
-                saveTabs();
+              .finally(function () {
+                $timeout(function () {
+                  saveTabs();
+                });
               });
-            });
         } else {
           args.unshift(bin);
 
@@ -379,6 +391,7 @@
 
           tab.child.command = input;
           tab.child.cwd = tab.cwd;
+          tab.child.msg = message;
 
           tab.child.stdout.on('data', stdout);
 
@@ -499,6 +512,10 @@
         replaced = replaced.replace(urlRegex, function (url) {
           return '<a onclick="openUrl(\'' + url + '\'); return false;" href="">' + url + '</a>';
         });
+
+        if ($scope.activeTab && $scope.activeTab.child && this === $scope.activeTab.child.msg) {
+          replaced += ' <i class="fa fa-spinner fa-spin current-task"></i>';
+        }
 
         return $sce.trustAsHtml(replaced);
       };

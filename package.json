@@ -1,8 +1,8 @@
 {
-  "name": "electron",
+  "name": "app",
   "version": "0.1.0",
   "description": "",
-  "main": "app.js",
+  "main": "main.js",
   "scripts": {
     "start": "node start.js",
     "test": "echo Nope, no tests"
@@ -10,9 +10,10 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "electron-prebuilt": "latest",
+    "easy-ipc": "^0.2.2",
     "include-all": "latest",
     "moment": "latest",
+    "open": "0.0.5",
     "q": "latest",
     "sprintf-js": "latest",
     "utf8": "latest"

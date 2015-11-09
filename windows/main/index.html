@@ -40,24 +40,26 @@
 
     <div ng-if="packageJSON && !activeTab.child">
         <md-menu md-position-mode="target-right target">
-            <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)" md-menu-origin>
+            <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)" >
                 NPM
             </md-button>
             <md-menu-content width="4">
                 <md-menu-item ng-repeat-start="(scriptName, script) in packageJSON.scripts">
                     <md-button ng-click="execute(script, activeTab)">
-                        <md-icon class="fa fa-play" md-menu-align-target></md-icon>
+                        <md-icon class="fa fa-play"></md-icon>
                         {{scriptName}}
                     </md-button>
                 </md-menu-item>
                 <md-menu-divider ng-repeat-end ng-if="$last"></md-menu-divider>
                 <md-menu-item>
                     <md-button ng-click="execute('npm update', activeTab)">
+                        <md-icon class="fa fa-cog"></md-icon>
                         Update
                     </md-button>
                 </md-menu-item>
                 <md-menu-item>
                     <md-button ng-click="execute('npm install', activeTab)">
+                        <md-icon class="fa fa-cog"></md-icon>
                         Install
                     </md-button>
                 </md-menu-item>

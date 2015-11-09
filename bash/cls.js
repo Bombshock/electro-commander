@@ -5,7 +5,7 @@
 
 module.exports = function (args, stdout, stderr, tab) {
     tab.lines = [];
-    window.saveTabs();
+    tab.history = [];
 };
 
 module.exports.help = [

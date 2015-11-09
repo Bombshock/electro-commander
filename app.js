@@ -31,8 +31,8 @@
             });
             mainWindow.loadUrl('file://' + __dirname + '/windows/main/index.html');
             mainWindow.maximize();
-            //mainWindow.toggleDevTools();
-            mainWindow.setMenu(null);
+            mainWindow.toggleDevTools();
+            //mainWindow.setMenu(null);
             mainWindow.on('close', exit);
             mainWindow.on('closed', exit);
         }

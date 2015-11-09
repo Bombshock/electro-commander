@@ -7,6 +7,11 @@
     var fs = require("fs");
     var colorSet = require(__dirname + "/colors.json");
 
+
+    window.addEventListener("storage", function (e) {
+        console.debug(e);
+    }, false);
+
     angular.module("app", ["ngMaterial"]);
 
     angular.module("app").config([
@@ -86,7 +91,7 @@
             $scope.lines = [];
             $scope.history = [];
 
-            $scope.tabs = storage.tabs ? JSON.parse(storage.tabs) : [];
+            $scope.tabs = getStoreage();
 
             $scope.$watch("selectedIndex", function (selectedIndex) {
                 storage.selectedIndex = selectedIndex;
@@ -141,6 +146,14 @@
                     execute("$help", newTab());
                 }
                 saveTabs();
+            }
+
+            function getStoreage() {
+                try {
+                    return require(__dirname + "/tabs.json");
+                } catch (e) {
+                    return [];
+                }
             }
 
             function globalKeyEvent($event) {
@@ -248,7 +261,9 @@
                 return tab;
             }
 
-            function saveTabs() {
+            var saveTabs = debounce(saveTabsDebounced, 100);
+
+            function saveTabsDebounced() {
                 var toSave = [];
                 for (var i = 0; i < $scope.tabs.length; i++) {
                     var tab = $scope.tabs[i];
@@ -258,9 +273,10 @@
                         cwd: tab.cwd,
                         name: tab.name,
                         bootstrap: tab.bootstrap
-                    })
+                    });
+                    console.log("TAB SAVE :: name: %s | lines: %s", tab.name, tab.lines.length);
                 }
-                storage.tabs = JSON.stringify(toSave);
+                fs.writeFileSync(__dirname + "/tabs.json", JSON.stringify(toSave, null, 2))
             }
 
             function spawn() {
@@ -310,9 +326,9 @@
                 if (bin in bash) {
                     Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
                         .finally(function () {
-                            if (!$scope.$$phase) {
-                                $scope.$apply();
-                            }
+                            $timeout(function () {
+                                saveTabs();
+                            });
                         });
                 } else {
                     args.unshift(bin);
@@ -333,13 +349,11 @@
                     tab.child.on('close', function (code) {
                         console.log('child process exited with code ' + code);
                         tab.child = null;
-                        if (!$scope.$$phase) {
-                            $scope.$apply();
-                        }
+                        $timeout(function () {
+                            saveTabs();
+                        });
                     });
                 }
-
-                saveTabs();
 
                 function stdout(msg) {
                     if (msg instanceof Buffer) {
@@ -363,11 +377,9 @@
                         tab.lines.push(new CMDMessage(msg));
                     }
 
-                    if (!$scope.$$phase) {
-                        $scope.$apply();
-                    }
-
-                    saveTabs();
+                    $timeout(function () {
+                        saveTabs();
+                    });
                 }
 
                 function stderr(msg) {
@@ -380,11 +392,9 @@
                     console.error(msg);
                     tab.lines.push(new CMDMessage(msg, CMDMessage.TYPE_ERROR));
 
-                    if (!$scope.$$phase) {
-                        $scope.$apply();
-                    }
-
-                    saveTabs();
+                    $timeout(function () {
+                        saveTabs();
+                    });
                 }
             }
 
@@ -415,6 +425,13 @@
             CMDMessage.TYPE_ERROR = 'error';
             CMDMessage.TYPE_DEFAULT = 'default';
             CMDMessage.TYPE_COMMAND = 'command';
+
+            CMDMessage.prototype.toJSON = function () {
+                return {
+                    message: this.message,
+                    type: this.type
+                }
+            };
 
             CMDMessage.prototype.toString = function () {
                 var open = 0;
@@ -451,5 +468,18 @@
             });
         }
     ]);
+
+    function debounce(func, wait, scope) {
+        var timeout;
+        return function () {
+            var context = scope || this, args = arguments;
+            var later = function () {
+                timeout = null;
+                func.apply(context, args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
 
 })();

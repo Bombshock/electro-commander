@@ -16,12 +16,10 @@
   function inputDirective($timeout) {
     return {
       restrict: 'A',
-      link: function (scope, element, attrs, controller) {
+      link: function (scope, element) {
         var tab = scope.$eval("activeTab");
         var ctrlDown = false;
         var lastTab = null;
-
-        console.log("scope", scope);
 
         window.addEventListener("keydown", function (event) {
           if (event.keyCode === 17) {

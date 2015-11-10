@@ -26,8 +26,9 @@ module.exports = function () {
     key: '\\SOFTWARE\\Classes\\Directory\\shell\\electroCommander\\command'
   });
 
-  var electron = "C:\\Users\\Alexander\\Desktop\\electron\\node_modules\\electron-prebuilt\\dist\\electron.exe";
-  var main = path.resolve(__dirname, "../main.js");
+  var electron = path.resolve(__dirname, "../../node_modules/electron-prebuilt/dist/electron.exe");
+  var main = path.resolve(__dirname, "../../main.js");
+  var ico = path.resolve(__dirname, "../../resources/icon.ico");
 
   if (process.argv.length > 0) {
     var first = process.argv[0];
@@ -37,39 +38,43 @@ module.exports = function () {
   }
 
   ensure(regKey)
-      .then(function () {
-        return setPath(regKey, "", Winreg.REG_SZ, "Open with electro");
-      })
-      .then(function () {
-        return setPath(regKey, "icon", Winreg.REG_SZ, electron);
-      });
+    .then(function () {
+      return setPath(regKey, "", Winreg.REG_SZ, "Open with electro");
+    })
+    .then(function () {
+      return setPath(regKey, "icon", Winreg.REG_SZ, ico);
+    })
+    .catch(console.error);
 
   ensure(regKeySub)
-      .then(function () {
-        return setPath(regKeySub, "", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--path" "%V"');
-      });
+    .then(function () {
+      return setPath(regKeySub, "", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--path" "%V"');
+    })
+    .catch(console.error);
 
   ensure(regKeyDir)
-      .then(function () {
-        return setPath(regKeyDir, "", Winreg.REG_SZ, "Open with electro");
-      })
-      .then(function () {
-        return setPath(regKeyDir, "icon", Winreg.REG_SZ, electron);
-      });
+    .then(function () {
+      return setPath(regKeyDir, "", Winreg.REG_SZ, "Open with electro");
+    })
+    .then(function () {
+      return setPath(regKeyDir, "icon", Winreg.REG_SZ, ico);
+    })
+    .catch(console.error);
 
   ensure(regKeyDirSub)
-      .then(function () {
-        return setPath(regKeyDirSub, "", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--path" "%V"');
-      });
+    .then(function () {
+      return setPath(regKeyDirSub, "", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--path" "%V"');
+    })
+    .catch(console.error);
 
   function ensure(regKey) {
     return values(regKey)
-        .catch(function () {
-          return create(regKey);
-        })
-        .then(function () {
-          return values(regKey);
-        })
+      .catch(function () {
+        return create(regKey);
+      })
+      .then(function () {
+        return values(regKey);
+      });
   }
 
   function values(regKey) {

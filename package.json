@@ -1,22 +1,27 @@
 {
-  "name": "app",
+  "name": "electro-commander",
   "version": "0.1.0",
-  "description": "",
+  "description": "Electro Commander",
   "main": "main.js",
   "scripts": {
     "start": "node start.js",
     "test": "echo Nope, no tests"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bombshock/electron.git"
+  },
   "author": "",
   "license": "",
   "dependencies": {
-    "easy-ipc": "^0.2.2",
+    "easy-ipc": "latest",
+    "electron-prebuilt": "latest",
     "include-all": "latest",
     "moment": "latest",
-    "open": "0.0.5",
+    "open": "latest",
     "q": "latest",
+    "require-all": "^2.0.0",
     "sprintf-js": "latest",
-    "utf8": "latest",
-    "winreg": "0.0.12"
+    "winreg": "latest"
   }
 }

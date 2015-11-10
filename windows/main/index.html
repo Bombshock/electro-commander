@@ -17,34 +17,25 @@
     </head>
     <body ng-controller="AppController" layout="column" ng-cloak ng-class="{'hasNoCursor': !$root.ctrlDown}">
 
-        <div ng-cloak id="button-overlay" layout="column" layout-align="start end" >
-            <div id="fab">
-                <md-fab-toolbar md-open="fabToolbar.isOpen" class="md-left">
-                    <md-fab-trigger class="align-with-text">
-                        <md-button aria-label="menu" class="md-fab md-primary">
-                            <md-icon class="fa fa-bars"></md-icon>
-                        </md-button>
-                    </md-fab-trigger>
-                    <md-toolbar>
-                        <md-fab-actions class="md-toolbar-tools">
-                            <md-button aria-label="add" class="md-icon-button" ng-click="removeTab(activeTab)">
-                                <md-icon class="fa fa-times"></md-icon>
-                            </md-button>
-                            <md-button aria-label="add" class="md-icon-button" ng-click="newTab()">
-                                <md-icon class="fa fa-plus"></md-icon>
-                            </md-button>
-                        </md-fab-actions>
-                    </md-toolbar>
-                </md-fab-toolbar>
+        <div ng-cloak id="button-overlay" layout="column" layout-align="start end">
+
+            <div ng-show="tabs.length > 0">
+                <md-button aria-label="add" class="md-fab md-primary" ng-click="tabs.remove(activeTab)">
+                    <md-icon class="fa fa-times"></md-icon>
+                </md-button>
             </div>
 
-            <div ng-if="packageJSON && !activeTab.child">
+            <md-button aria-label="add" class="md-fab md-primary" ng-click="tabs.new()">
+                <md-icon class="fa fa-plus"></md-icon>
+            </md-button>
+
+            <div ng-show="activeTab.packageJson && !activeTab.child">
                 <md-menu md-position-mode="target-right target">
                     <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
                         NPM
                     </md-button>
                     <md-menu-content width="4">
-                        <md-menu-item ng-repeat-start="(scriptName, script) in packageJSON.scripts">
+                        <md-menu-item ng-repeat-start="(scriptName, script) in activeTab.packageJson.scripts">
                             <md-button ng-click="execute(script, activeTab)">
                                 <md-icon class="fa fa-play"></md-icon>
                                 {{scriptName}}
@@ -81,10 +72,10 @@
                         </md-button>
                     </md-fab-trigger>
                     <md-fab-actions>
-                        <md-button aria-label="replay" class="md-fab md-raised md-mini" ng-click="restartActiveTabChild()">
+                        <md-button aria-label="replay" class="md-fab md-raised md-mini" ng-click="restartTabChild(activeTab)">
                             <md-icon class="fa fa-repeat" aria-label="replay"></md-icon>
                         </md-button>
-                        <md-button aria-label="stop" class="md-fab md-raised md-mini" ng-click="killActiveTabChild()">
+                        <md-button aria-label="stop" class="md-fab md-raised md-mini" ng-click="killTabChild(activeTab)">
                             <md-icon class="fa fa-stop" aria-label="stop"></md-icon>
                         </md-button>
                     </md-fab-actions>
@@ -93,16 +84,14 @@
         </div>
 
         <md-tabs ng-cloak md-selected="selectedIndex" md-border-bottom md-autoselect flex>
-            <md-tab ng-repeat-start="tab in tabs" label="{{tab.name || $index + 1}}" flex flex-grow scroll-down ng-if="activeTab.type">
+            <md-tab ng-repeat="tab in tabs" label="{{tab.name || tab.cwd}}" ng-class="{'monospace': !tab.name}" flex flex-grow scroll-down>
                 <div flex class="console monospace">
                     <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
                 </div>
             </md-tab>
-            <md-tab ng-repeat-end flex flex-grow ng-if="!activeTab.type" ng-include="__dirname + '/tabs/' + activeTab.type + '.html'">
-            </md-tab>
         </md-tabs>
 
-        <div ng-cloak class="input monospace" layout="row" ng-show="!activeTab.child && !activeTab.type">
+        <div ng-cloak class="input monospace" layout="row" ng-show="!activeTab.child && !activeTab.type && tabs.length > 0">
             <label>
                 {{activeTab.cwd}}<span ng-if="activeTab.branch" style="color: cyan;"> [{{activeTab.branch}}]</span>>
             </label>
@@ -116,7 +105,5 @@
         <script src="../../bower_components/angular-material/angular-material.js"></script>
 
         <script src="app.js"></script>
-        <script src="input.js"></script>
-        <script src="scroll-down.js"></script>
     </body>
 </html>

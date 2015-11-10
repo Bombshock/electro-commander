@@ -1,7 +1,6 @@
 /*global require*/
 /*global process*/
 /*global __dirname*/
-/*global console*/
 
 (function () {
   'use strict';
@@ -15,8 +14,8 @@
   var mainWindowConfigPath = __dirname + "/windows/main/conf/window.json";
   var electron_ipc = require('ipc');
   var masterIpc;
-
-  require("./scripts/registry.js")();
+  var argv = process.argv || [];
+  var debugMode = argv.indexOf("--debug") !== -1;
 
   var ipc = new Ipc({
     port: 7100,
@@ -31,28 +30,27 @@
 
   app.on('ready', function () {
     ipc
-        .on('listening', function (server) {
-          masterProcess();
-          ipc.on('data', function (data, conn, server) {
-            if (masterIpc) {
-              console.log('got data:', data);
-              masterIpc.send('argv', data);
-            }
-            conn.write(true);
-          });
-        })
-        .once('connect', function (conn) {
-          conn.write(process.argv);
-          ipc.on('data', function (data, conn) {
-            if (data === true) {
-              conn.end();
-            }
-          });
-          ipc.on('close', function (had_error, conn) {
-            process.exit(0);
-          });
-        })
-        .start();
+      .on('listening', function () {
+        masterProcess();
+        ipc.on('data', function (data, conn) {
+          if (masterIpc) {
+            masterIpc.send('argv', data);
+          }
+          conn.write(true);
+        });
+      })
+      .once('connect', function (conn) {
+        conn.write(process.argv);
+        ipc.on('data', function (data, conn) {
+          if (data === true) {
+            conn.end();
+          }
+        });
+        ipc.on('close', function () {
+          process.exit(0);
+        });
+      })
+      .start();
   });
 
   function masterProcess() {
@@ -75,11 +73,18 @@
 
     config.icon = __dirname + '/resources/icon.png';
 
+    BrowserWindow.addDevToolsExtension(__dirname + '/windows/batarang.crx');
+
     mainWindow = new BrowserWindow(config);
     mainWindow.loadUrl('file://' + __dirname + '/windows/main/index.html');
     mainWindow.maximize();
-    mainWindow.toggleDevTools();
-    mainWindow.setMenu(null);
+
+    if (debugMode) {
+      //mainWindow.toggleDevTools();
+    } else {
+      mainWindow.setMenu(null);
+    }
+
     mainWindow.setTitle("electro-commander");
 
     mainWindow.on("close", function () {
@@ -91,7 +96,7 @@
 
   process.on('exit', exit);
   function exit(event) {
-    if (event.preventDefault) {
+    if (event && event.preventDefault) {
       event.preventDefault();
     }
     exec("taskkill /pid " + process.pid + " /f /t ");

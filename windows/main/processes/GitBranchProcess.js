@@ -53,7 +53,7 @@
               tab: tab
             }
           })
-          .then(function (answer) {
+          .then(function () {
 
           }, function () {
 
@@ -119,12 +119,11 @@
         });
       });
 
-      $q.wait(5000).then(function () {
+      $q.wait(0).then(function () {
         require("child_process").exec("git log --pretty=format:\"{'hash': '%h', 'author':'%an', 'date':'%ar', 'message':'%s'},\"".replace(/'/gi, "\\\""), {
           cwd: tab.cwd
         }, function (error, stdout) {
           stdout = stdout.replace(/,$/gi, "");
-          console.log("stdout", stdout);
           $scope.loading = false;
           $timeout(function () {
             if (!error) {
@@ -134,7 +133,6 @@
           });
         });
       });
-
 
       $scope.hide = function () {
         $mdDialog.hide();

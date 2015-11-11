@@ -1,94 +1,19 @@
-<md-dialog aria-label="Git" md-theme="github" style="width: 90%; max-height: 90%;">
-    <form>
-        <md-toolbar>
-            <div class="md-toolbar-tools">
-                <md-icon class="fa fa-github" style="margin-right: 25px;"></md-icon>
-                <h2 style="margin-top: 5px;">
-                    Git
-                </h2>
-                <span flex></span>
-                <md-button class="md-icon-button" ng-click="cancel()">
-                    <md-icon class="fa fa-times" aria-label="Close dialog"></md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
-        <md-dialog-content>
-            <md-tabs md-dynamic-height md-border-bottom>
-                <md-tab>
-                    <md-tab-label>
-                        history
-                    </md-tab-label>
-                    <md-tab-body>
-                        <md-content class="" ng-if="matchesHistory">
-                            <table>
-                                <thead>
-                                <tr>
-                                    <td>message</td>
-                                    <td>author</td>
-                                    <td>date</td>
-                                    <td>hash</td>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="match in matchesHistory">
-                                    <td>{{match.message}}</td>
-                                    <td>{{match.author}}</td>
-                                    <td>{{match.date}}</td>
-                                    <td>{{match.hash}}</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </md-content>
-                        <div layout="row" layout-sm="column" layout-align="space-around" ng-if="!matchesHistory">
-                            <md-progress-circular md-mode="indeterminate" style="margin: 50px;"></md-progress-circular>
-                        </div>
-                    </md-tab-body>
-                </md-tab>
-                <md-tab>
-                    <md-tab-label>
-                        changes ({{matchesChanges.length || 0}})
-                    </md-tab-label>
-                    <md-tab-body class="md-padding">
-                        <md-list>
-                            <md-list-item ng-repeat-start="match in matchesChanges">
-                                <p> {{ match }} </p>
-                            </md-list-item>
-                            <md-divider ng-repeat-end>
-                        </md-list>
-                        <md-dialog-actions layout="row">
-                            <form name="commitForm" layout="row">
-                                <md-input-container flex style="margin-left: 15px;">
-                                    <label>commit message</label>
-                                    <input ng-model="commitMessage" required name="commitMessage">
-
-                                    <div ng-messages="commitForm.commitMessage.$error">
-                                        <div ng-message="required">This is required.</div>
-                                    </div>
-                                </md-input-container>
-                                <md-button ng-click="commit()">
-                                    commit
-                                </md-button>
-                                <md-button ng-click="answer('useful')" style="margin-right:20px;">
-                                    commit & push
-                                </md-button>
-                            </form>
-                        </md-dialog-actions>
-                    </md-tab-body>
-                </md-tab>
-                <md-tab>
-                    <md-tab-label>
-                        unversioned ({{matchesUnversioned.length || 0}})
-                    </md-tab-label>
-                    <md-tab-body class="md-padding">
-                        <md-list>
-                            <md-list-item ng-repeat-start="match in matchesUnversioned" ng-click="lol()">
-                                <p> {{ match }} </p>
-                                <md-icon class="fa fa-plus" aria-label="add" ng-click=""></md-icon>
-                            </md-list-item>
-                            <md-divider ng-repeat-end>
-                        </md-list>
-                    </md-tab-body>
-                </md-tab>
+<md-dialog aria-label="Git" md-theme="github" style="width: 90%; height: 90%; max-width: 800px; max-height: 800px;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-icon class="fa fa-github" style="margin-right: 25px;"></md-icon>
+            <h2 style="margin-top: 5px;">
+                Git
+            </h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon class="fa fa-times" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content flex layout="row">
+        <form flex layout="row">
+            <md-tabs md-border-bottom md-autoselect flex>
                 <md-tab label="two">
                     <md-content class="md-padding">
                         <h1 class="md-display-2">Tab Two</h1>
@@ -118,6 +43,56 @@
                             est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
                     </md-content>
                 </md-tab>
+
+                <!-- CHANGES -->
+                <md-tab>
+                    <md-tab-label>
+                        changes ({{matchesChanges.length || 0}})
+                    </md-tab-label>
+                    <md-tab-body class="md-padding">
+                        <md-list>
+                            <md-list-item ng-repeat-start="match in matchesChanges">
+                                <p> {{ match }} </p>
+                            </md-list-item>
+                            <md-divider ng-repeat-end>
+                        </md-list>
+                        <md-dialog-actions layout="row">
+                            <form name="commitForm" layout="row">
+                                <md-input-container flex style="margin-left: 15px;" md-autofocus>
+                                    <label>commit message</label>
+                                    <input ng-model="commitMessage" required name="commitMessage">
+
+                                    <div ng-messages="commitForm.commitMessage.$error">
+                                        <div>This is required.</div>
+                                    </div>
+                                </md-input-container>
+                                <md-button ng-click="commit()">
+                                    commit
+                                </md-button>
+                                <md-button ng-click="answer('useful')" style="margin-right:20px;">
+                                    commit & push
+                                </md-button>
+                            </form>
+                        </md-dialog-actions>
+                    </md-tab-body>
+                </md-tab>
+
+                <!-- UNRESOLVED -->
+                <md-tab>
+                    <md-tab-label>
+                        unversioned ({{matchesUnversioned.length || 0}})
+                    </md-tab-label>
+                    <md-tab-body class="md-padding">
+                        <md-list>
+                            <md-list-item ng-repeat-start="match in matchesUnversioned" ng-click="lol()">
+                                <p> {{ match }} </p>
+                                <md-icon class="fa fa-plus" aria-label="add" ng-click=""></md-icon>
+                            </md-list-item>
+                            <md-divider ng-repeat-end>
+                        </md-list>
+                    </md-tab-body>
+                </md-tab>
+
                 <md-tab label="three">
                     <md-content class="md-padding">
                         <h1 class="md-display-2">Tab Three</h1>
@@ -128,7 +103,39 @@
                             est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
                     </md-content>
                 </md-tab>
+
+                <!-- HISTORY -->
+                <md-tab>
+                    <md-tab-label>
+                        history
+                    </md-tab-label>
+                    <md-tab-body test-attr>
+                        <md-content class="" ng-if="matchesHistory">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <td>message</td>
+                                        <td>author</td>
+                                        <td>date</td>
+                                        <td>hash</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="match in matchesHistory">
+                                        <td>{{match.message}}</td>
+                                        <td>{{match.author}}</td>
+                                        <td>{{match.date}}</td>
+                                        <td>{{match.hash}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </md-content>
+                        <div layout="row" layout-sm="column" layout-align="space-around" ng-if="!matchesHistory">
+                            <md-progress-circular md-mode="indeterminate" style="margin: 50px;"></md-progress-circular>
+                        </div>
+                    </md-tab-body>
+                </md-tab>
             </md-tabs>
-        </md-dialog-content>
-    </form>
+        </form>
+    </md-dialog-content>
 </md-dialog>

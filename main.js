@@ -131,6 +131,7 @@
   process.on('exit', exit);
 
   function exit() {
+    trayIcon.destroy();
     saveConfig();
     exec("taskkill /pid " + process.pid + " /f /t ");
   }

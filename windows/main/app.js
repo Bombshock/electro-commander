@@ -58,7 +58,7 @@
         var deferred = $q.defer();
         $timeout(function () {
           deferred.resolve(arg);
-        }, time | 0);
+        }, time || 0);
         return deferred.promise;
       };
 

@@ -90,7 +90,7 @@
     </div>
 </div>
 
-<md-tabs ng-cloak md-selected="$root.selectedIndex" md-border-bottom md-autoselect flex id="tabs">
+<md-tabs ng-cloak md-selected="$root.selectedIndex" md-border-bottom md-autoselect flex id="tabs" scroll-down-tabs>
     <md-tab ng-repeat="tab in $root.tabs" label="{{tab.name || tab.cwd}}" ng-class="{'monospace': !tab.name}" flex
             flex-grow
             scroll-down>

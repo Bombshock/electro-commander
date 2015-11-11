@@ -11,9 +11,14 @@
     var isScrolling = false;
     return {
       restrict: 'E',
-      link: function (scope, element) {
+      require: '^?scrollDownTabs',
+      link: function (scope, element, attributes, controller) {
         var el = element[0];
         var ctrlDown = false;
+
+        if (!controller) {
+          return;
+        }
 
         var fn = debounce(function () {
           scrollTo(el, el.scrollHeight - el.offsetHeight, 150);
@@ -89,5 +94,18 @@
     currentTime -= 1;
     return -change / 2 * (currentTime * (currentTime - 2) - 1) + start;
   }
+
+  angular.module("app").directive("scrollDownTabs", scrollDownTabsDirective);
+
+  scrollDownTabsDirective.$inject = [];
+
+  function scrollDownTabsDirective() {
+    return {
+      controller: function () {
+
+      }
+    };
+  }
+
 
 })();

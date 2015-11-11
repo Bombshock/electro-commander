@@ -5,6 +5,8 @@
 
   angular.module("app").run(HotkeyProcessRun);
 
+  var currentWindow = require("remote").getCurrentWindow();
+
   HotkeyProcessRun.$inject = ["$timeout", "$rootScope", "kill", "tabs", "execute"];
 
   function HotkeyProcessRun($timeout, $rootScope, kill, tabs, execute) {
@@ -13,9 +15,11 @@
     $rootScope.restartTabChild = restartTabChild;
 
     window.addEventListener("keyup", function ($event) {
-      $timeout(function () {
-        globalKeyEvent($event);
-      });
+      if (!$rootScope.activeModal) {
+        $timeout(function () {
+          globalKeyEvent($event);
+        });
+      }
     });
 
     function globalKeyEvent($event) {
@@ -37,8 +41,12 @@
         tabs.remove(tab);
       }
 
-      if ($event.ctrlKey && $event.keyCode === 78) { //ctrl-n
+      if ($event.ctrlKey && $event.keyCode === 84) { //ctrl-t
         tabs.new();
+      }
+
+      if ($event.keyCode === 27) { //ctrl-t
+        currentWindow.hide();
       }
     }
 

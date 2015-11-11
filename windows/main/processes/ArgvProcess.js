@@ -5,6 +5,7 @@
 
   var electron_ipc = require('ipc');
   var remote = require("remote");
+  var currentWindow = require("remote").getCurrentWindow();
 
   angular.module("app").run(ArgvProcess);
   electron_ipc.send('asynchronous-message', 'ping');
@@ -15,6 +16,9 @@
   function ArgvProcess(argvHandler) {
     argvHandler(remote.process.argv);
     electron_ipc.on('argv', argvHandler);
+    electron_ipc.on('argv', function () {
+      currentWindow.show();
+    });
   }
 
 })();

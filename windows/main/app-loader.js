@@ -23,7 +23,6 @@ function loadFolder(folder, document) {
         var fileref = document.createElement('script');
         fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", path);
-        console.debug("loaded ::", folder + "/" + file + ".js");
         document.body.appendChild(fileref);
       }
     }

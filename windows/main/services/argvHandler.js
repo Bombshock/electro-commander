@@ -15,9 +15,14 @@
     function handleArgv(argv) {
       var pathIndex = argv.indexOf("--path");
       if (pathIndex !== -1 && pathIndex + 1 < argv.length) {
-        openPath(argv[pathIndex + 1]);
+        currentWindow.focus();
+        $timeout(function (){
+          openPath(argv[pathIndex + 1]);
+          $timeout(function (){
+              $rootScope.globalInput.focus();
+          })
+        }, 300);
       }
-      currentWindow.focus();
     }
 
     function openPath(pathToOpen) {

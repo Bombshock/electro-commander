@@ -11,7 +11,7 @@ module.exports = function (args, stdout, stderr) {
     var cwd = process.cwd();
 
     if (args.length > 0) {
-        cwd = args[args.length - 1];
+        cwd = args[0];
     }
 
     return Q.ninvoke(fs, "readdir", cwd)

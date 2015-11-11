@@ -5,8 +5,10 @@
 (function () {
   'use strict';
 
-  var mainWindow;
+  var mainWindow, trayIcon;
   var app = require('app');
+  var Tray = require('tray');
+  var Menu = require('menu');
   var fs = require('fs');
   var Ipc = require('easy-ipc');
   var BrowserWindow = require('browser-window');
@@ -15,7 +17,8 @@
   var electron_ipc = require('ipc');
   var masterIpc;
   var argv = process.argv || [];
-  var debugMode = argv.indexOf("--debug") !== -1;
+  var devMode = argv.indexOf("--dev") !== -1;
+  var trayMode = argv.indexOf("--tray") !== -1;
 
   var ipc = new Ipc({
     port: 7100,
@@ -30,33 +33,42 @@
 
   app.on('ready', function () {
     ipc
-      .on('listening', function () {
-        masterProcess();
-        ipc.on('data', function (data, conn) {
-          if (masterIpc) {
-            masterIpc.send('argv', data);
-          }
-          conn.write(true);
-        });
-      })
-      .once('connect', function (conn) {
-        conn.write(process.argv);
-        ipc.on('data', function (data, conn) {
-          if (data === true) {
-            conn.end();
-          }
-        });
-        ipc.on('close', function () {
-          process.exit(0);
-        });
-      })
-      .start();
+        .on('listening', function () {
+          masterProcess();
+          ipc.on('data', function (data, conn) {
+            if (masterIpc) {
+              masterIpc.send('argv', data);
+            }
+            conn.write(true);
+          });
+        })
+        .once('connect', function (conn) {
+          conn.write(process.argv);
+          ipc.on('data', function (data, conn) {
+            if (data === true) {
+              conn.end();
+            }
+          });
+          ipc.on('close', function () {
+            process.exit(0);
+          });
+        })
+        .start();
   });
 
   function masterProcess() {
     var screen = require('screen');
     var displays = screen.getAllDisplays();
     var externalDisplay = displays[displays.length - 1];
+    var startMaximized = false;
+
+    trayIcon = new Tray(__dirname + "/resources/icon.png");
+
+    var contextMenu = Menu.buildFromTemplate([{
+      label: 'close',
+      click: exit
+    }]);
+    trayIcon.setContextMenu(contextMenu);
 
     var config = {
       width: externalDisplay.bounds.width,
@@ -68,18 +80,38 @@
     try {
       config = require(mainWindowConfigPath);
     } catch (e) {
-      //config not found? like i give a fuck
+      startMaximized = true;
     }
 
     config.icon = __dirname + '/resources/icon.png';
+    config.show = false;
 
-    BrowserWindow.addDevToolsExtension(__dirname + '/windows/batarang.crx');
+    startMaximized = config.maximized || startMaximized;
 
     mainWindow = new BrowserWindow(config);
     mainWindow.loadUrl('file://' + __dirname + '/windows/main/index.html');
-    mainWindow.maximize();
 
-    if (debugMode) {
+    trayIcon.on("clicked", function () {
+      if (mainWindow.isVisible()) {
+        mainWindow.hide();
+      } else {
+        mainWindow.show();
+        if (startMaximized) {
+          mainWindow.maximize();
+          startMaximized = false;
+        }
+      }
+    });
+
+    if (!trayMode) {
+      mainWindow.show();
+      if (startMaximized) {
+        mainWindow.maximize();
+        startMaximized = false;
+      }
+    }
+
+    if (devMode) {
       //mainWindow.toggleDevTools();
     } else {
       mainWindow.setMenu(null);
@@ -87,19 +119,26 @@
 
     mainWindow.setTitle("electro-commander");
 
-    mainWindow.on("close", function () {
-      var data = mainWindow.getBounds();
-      fs.writeFileSync(mainWindowConfigPath, JSON.stringify(data, null, 2));
+    mainWindow.on("close", function close(event) {
+      mainWindow.hide();
+      saveConfig();
+      event.preventDefault();
     });
-    mainWindow.on('close', exit);
+
+    mainWindow.on('closed', exit);
   }
 
   process.on('exit', exit);
-  function exit(event) {
-    if (event && event.preventDefault) {
-      event.preventDefault();
-    }
+
+  function exit() {
+    saveConfig();
     exec("taskkill /pid " + process.pid + " /f /t ");
+  }
+
+  function saveConfig() {
+    var data = mainWindow.getBounds();
+    data.maximized = mainWindow.isMaximized();
+    fs.writeFileSync(mainWindowConfigPath, JSON.stringify(data, null, 2));
   }
 
 })();

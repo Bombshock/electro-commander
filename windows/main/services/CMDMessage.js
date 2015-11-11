@@ -8,7 +8,7 @@
   CMDMessageService.$inject = ["$sce", "$rootScope"];
 
   function CMDMessageService($sce, $rootScope) {
-    var colorSet = require(__dirname + "/../colors.json");
+    var colorSet = require(__dirname + "\\..\\colors.json");
 
     function CMDMessage(message, type) {
       this.message = message || '';

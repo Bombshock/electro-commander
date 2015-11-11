@@ -35,6 +35,7 @@
         }
         mainProcess.$emit("cycle");
       }
+      console.log("tabs.remove :: index: %s | tab: %o", index, tab);
     };
 
     tabs.save = debounce(save, 100);
@@ -42,7 +43,7 @@
 
     function getStoreage() {
       try {
-        return require(__dirname + "/../conf/tabs.json");
+        return require(__dirname + "\\..\\conf\\tabs.json");
       } catch (e) {
         return [];
       }
@@ -60,7 +61,7 @@
           bootstrap: tab.bootstrap
         });
       }
-      fs.writeFileSync(__dirname + "/../conf/tabs.json", JSON.stringify(toSave, null, 2));
+      fs.writeFileSync(__dirname + "\\..\\conf\\tabs.json", JSON.stringify(toSave, null, 2));
     }
 
     return tabs;

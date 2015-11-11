@@ -11,15 +11,17 @@
 
   angular.module("app").directive("tabInput", inputDirective);
 
-  inputDirective.$inject = ["$timeout"];
+  inputDirective.$inject = ["$timeout", "$rootScope"];
 
-  function inputDirective($timeout) {
+  function inputDirective($timeout, $rootScope) {
     return {
       restrict: 'A',
       link: function (scope, element) {
         var tab = scope.$eval("activeTab");
         var ctrlDown = false;
         var lastTab = null;
+
+        scope.$root.globalInput = element;
 
         window.addEventListener("keydown", function (event) {
           if (event.keyCode === 17) {
@@ -38,11 +40,22 @@
           element.focus();
         }, 100);
 
-        element.on("blur", function () {
-          if (!ctrlDown) {
+        element.on("blur", globalFocus);
+        scope.$watch(globalFocus);
+
+        $rootScope.$watch("activeModal", function (activeModal) {
+          if (activeModal) {
+            element.blur();
+          } else {
             element.focus();
           }
         });
+
+        function globalFocus() {
+          if (!ctrlDown && !$rootScope.activeModal) {
+            element.focus();
+          }
+        }
 
         scope.$watch("activeTab.child", function (child) {
           if (!child) {
@@ -70,6 +83,10 @@
           var TABKEY = 9;
           var UPKEY = 38;
           var DOWNKEY = 40;
+
+          if (!tab) {
+            return;
+          }
 
           var doubleTabTimer = 200;
 

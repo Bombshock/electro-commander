@@ -20,6 +20,27 @@
       var input = line;
       var args = input.split(" ");
       var bin = args.shift();
+      var regexString = args.join(" ");
+      var escaped = false;
+      var last = null;
+      var soFar = "";
+
+      args = [];
+
+      for (var i = 0; i < regexString.length; i++) {
+        var char = regexString[i];
+        if (char === '"' && last !== "\\") {
+          escaped = !escaped;
+        } else if (char === " " && !escaped && i !== 0) {
+          args.push(soFar);
+          soFar = "";
+        } else if(char !== "\\") {
+          soFar += char;
+        }
+        last = char;
+      }
+
+      args.push(soFar);
 
       cwd = cwd || tab.cwd;
 
@@ -39,15 +60,16 @@
 
       if (bin in bash) {
         Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
-          .finally(function () {
-            mainProcess.$emit("cycle");
-          });
+            .finally(function () {
+              mainProcess.$emit("cycle");
+            });
       } else {
         args.unshift(bin);
-
+        args = ["/s", "/c"].concat(args);
+        console.log("args", args);
         // cmd "/s", "/c"
         // PowerShell "-NoProfile", "-NonInteractive", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command"
-        tab.child = spawn("cmd", ["/s", "/c"].concat(args), {
+        tab.child = spawn("cmd", args, {
           cwd: cwd
         });
 

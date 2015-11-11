@@ -16,24 +16,31 @@
   angular.module("app").config([
     "$mdThemingProvider",
     function ($mdThemingProvider) {
+
       //black background color
       var black = $mdThemingProvider.extendPalette('grey', {
         'A100': '333333'
       });
       $mdThemingProvider.definePalette('black', black);
 
-      // Dark Theme
-      $mdThemingProvider.theme('darkTheme')
-        .dark()
-        .accentPalette('grey', {
-          'default': '200'
-        })
-        .primaryPalette('orange', {
-          'default': '800'
-        })
-        .backgroundPalette('black');
+      $mdThemingProvider.theme('github')
+          .dark()
+          .accentPalette('grey')
+          .primaryPalette('blue')
+          .backgroundPalette('black');
 
-      $mdThemingProvider.setDefaultTheme('darkTheme');
+      // Dark Theme
+      $mdThemingProvider.theme('dark')
+          .dark()
+          .accentPalette('grey', {
+            'default': '200'
+          })
+          .primaryPalette('orange', {
+            'default': '800'
+          })
+          .backgroundPalette('black');
+
+      $mdThemingProvider.setDefaultTheme('dark');
     }
   ]);
 
@@ -41,10 +48,19 @@
     "$rootScope",
     "execute",
     "tabs",
-    function ($scope, execute, tabs) {
-
+    "$q",
+    "$timeout",
+    function ($scope, execute, tabs, $q, $timeout) {
       var storage = localStorage || {};
       var MAX_LINES = 250;
+
+      $q.wait = function (time, arg) {
+        var deferred = $q.defer();
+        $timeout(function () {
+          deferred.resolve(arg);
+        }, time | 0);
+        return deferred.promise;
+      };
 
       process.chdir(process.env.CWD || process.env.USERPROFILE);
 
@@ -57,17 +73,13 @@
       $scope.tabs = tabs;
       $scope.selectedIndex = storage.selectedIndex || 0;
 
+      if ($scope.selectedIndex >= $scope.tabs.length) {
+        $scope.selectedIndex = $scope.tabs.length - 1;
+      }
+
       $scope.$watch(function () {
         storage.selectedIndex = $scope.selectedIndex || 0;
         $scope.activeTab = $scope.tabs[storage.selectedIndex];
-      });
-
-      $scope.$watch("activeTab", function (activeTab) {
-        console.log("activeTab", activeTab);
-      });
-
-      $scope.$watch("selectedIndex", function (selectedIndex) {
-        console.log("selectedIndex", selectedIndex);
       });
 
       $scope.$watchCollection("activeTab.lines", function (lines) {
@@ -77,12 +89,12 @@
           }
         }
       });
+
+      $scope.openUrl = window.openUrl = function (url) {
+        require("open")(url);
+      };
     }
   ]);
-
-  window.openUrl = function (url) {
-    require("open")(url);
-  };
 
   require("./app-loader")(document);
 

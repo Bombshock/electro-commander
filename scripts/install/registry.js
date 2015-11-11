@@ -25,6 +25,10 @@ module.exports = function () {
     hive: Winreg.HKCU,
     key: '\\SOFTWARE\\Classes\\Directory\\shell\\electroCommander\\command'
   });
+  var regKeyAutostart = new Winreg({
+    hive: Winreg.HKCU,
+    key: '\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\run'
+  });
 
   var electron = path.resolve(__dirname, "../../node_modules/electron-prebuilt/dist/electron.exe");
   var main = path.resolve(__dirname, "../../main.js");
@@ -64,6 +68,12 @@ module.exports = function () {
   ensure(regKeyDirSub)
     .then(function () {
       return setPath(regKeyDirSub, "", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--path" "%V"');
+    })
+    .catch(console.error);
+
+  ensure(regKeyAutostart)
+    .then(function () {
+      return setPath(regKeyAutostart, "Electro Commander", Winreg.REG_SZ, '"' + electron + '" "' + main + '" "--tray"');
     })
     .catch(console.error);
 

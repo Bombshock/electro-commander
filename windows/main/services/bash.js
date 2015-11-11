@@ -9,7 +9,7 @@
 
   function bashService() {
     return require('include-all')({
-      dirname: __dirname + '/../../../bash',
+      dirname: __dirname + '\\..\\..\\..\\bash',
       filter: /(.*)\.js$/
     });
   }

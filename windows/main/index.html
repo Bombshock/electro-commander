@@ -136,7 +136,8 @@
             <md-button
                     style="  margin: -5px 0 0 0; min-width: 40px; padding: 0; position: relative; top: -1px; right: -15px;"
                     ng-if="$root.activeTab === tab"
-                    ng-click="tabs.remove(tab)">
+                    ng-click="tabs.remove(tab)"
+                    aria-label="close tab">
                 <md-icon class="fa fa-times-circle"></md-icon>
             </md-button>
         </md-tab-label>

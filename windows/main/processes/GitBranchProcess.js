@@ -1,3 +1,4 @@
+/*global require*/
 /*global angular*/
 /*global document*/
 /*global __dirname*/
@@ -5,38 +6,75 @@
 (function () {
   'use strict';
 
+  var child_process = require("child_process");
+  var fs = require("fs");
+  var Q = require("q");
+
   angular.module("app").run(GitBranchProcess);
 
-  GitBranchProcess.$inject = ["mainProcess", "$timeout", "$rootScope", "$mdDialog", "$q"];
+  GitBranchProcess.$inject = ["mainProcess", "$timeout", "$rootScope", "$mdDialog", "$q", "debounce", "execute"];
 
-  function GitBranchProcess(mainProcess, $timeout, $rootScope, $mdDialog, $q) {
-    mainProcess.on("cycle", gitBranchCycle);
+  function GitBranchProcess(mainProcess, $timeout, $rootScope, $mdDialog, $q, debounce, execute) {
+
     $rootScope.gitModal = gitModal;
     $rootScope.gitModalOpened = false;
 
-    function gitBranchCycle(reason, activeTab) {
-      if (reason === "cwd") {
-        var gitFolder = activeTab.ls[activeTab.ls.indexOf(".git")];
+    function clean(tab) {
+      delete tab.branches;
+      delete tab.branch;
+    }
 
-        if (gitFolder) {
-          require("child_process").exec("git branch", {
-            cwd: activeTab.cwd
-          }, function (error, stdout) {
-            $timeout(function () {
-              if (error) {
-                delete activeTab.branch;
-              } else {
-                activeTab.branch = stdout.replace("*", "").trim();
+    mainProcess.on("tab.cwd", function (cwd, tab) {
+      gitHandler(tab);
+
+      var debouncedGitHandler = debounce(function () {
+        gitHandler(tab);
+      }, 100);
+
+      tab.cwdWatcher.on("change", function (event, file) {
+        if (file === null || file === ".git") {
+          debouncedGitHandler();
+        }
+      })
+    });
+
+    function gitHandler(tab) {
+      if (!tab) {
+        return;
+      }
+      var gitFolder;
+
+      try {
+        fs.readdirSync(tab.cwd + "\\.git");
+        gitFolder = true
+      } catch (ex) {
+        gitFolder = false
+      }
+
+      if (gitFolder) {
+        getBranches(tab)
+            .then(function (branches) {
+              tab.branches = branches;
+              for (var i = 0; i < branches.length; i++) {
+                var branch = branches[i];
+                if (branch.active) {
+                  tab.branch = branch;
+                  break;
+                }
+              }
+            })
+            .catch(clean)
+            .finally(function () {
+              if (!$rootScope.$$phase) {
+                $rootScope.$apply();
               }
             });
-          });
-        } else {
-          delete activeTab.branch;
-        }
+      } else {
+        clean(tab);
       }
     }
 
-    function gitModal($event, tab) {
+    function gitModal($event, tab, selectedIndex) {
       if ($rootScope.gitModalOpened) {
         return;
       }
@@ -50,7 +88,8 @@
             targetEvent: $event,
             clickOutsideToClose: true,
             locals: {
-              tab: tab
+              tab: tab,
+              selectedIndex: selectedIndex || 0
             }
           })
           .then(function () {
@@ -64,14 +103,26 @@
           });
     }
 
-    DialogController.$inject = ["$scope", "$mdDialog", "tab"];
-    function DialogController($scope, $mdDialog, tab) {
+    DialogController.$inject = ["$scope", "$mdDialog", "tab", "selectedIndex"];
+    function DialogController($scope, $mdDialog, tab, selectedIndex) {
       var regexChanges = /diff --git a\/(.*) b\/(.*)/ig;
       var regexUnversioned = /Would remove (.*)/ig;
 
       $scope.loadingUnversioned = true;
       $scope.loadingChanges = true;
       $scope.loadingHistory = true;
+      $scope.selectedIndex = selectedIndex;
+      $scope.tab = tab;
+
+      $scope.$watch("tab.branch.name", function (name) {
+        if (name) {
+          selectGitBranch(name);
+        }
+      });
+
+      function selectGitBranch(branchName) {
+        child_process.exec("git checkout " + branchName, {cwd: tab.cwd});
+      }
 
       require("child_process").exec("git diff", {
         cwd: tab.cwd
@@ -144,6 +195,26 @@
         $mdDialog.hide(answer);
       };
     }
+  }
+
+  function getBranches(tab) {
+    return Q.npost(child_process, "exec", ["git branch", {cwd: tab.cwd}])
+        .then(function (branches) {
+          branches = branches[0];
+          branches = branches.split("\n");
+          branches = branches
+              .filter(function (branch) {
+                return branch.trim() !== "";
+              })
+              .map(function (branch) {
+                return {
+                  name: branch.replace("*", "").trim(),
+                  active: branch[0] === "*"
+                };
+              });
+
+          return branches;
+        })
   }
 
 })();

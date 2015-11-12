@@ -74,12 +74,13 @@ a {
     outline: 0;
     margin-left: 5px;
     font-family: monospace;
-    height: 20px;
-    line-height: 20px;
 }
 
 .input > label {
     padding: 0;
+}
+
+.input > * {
     height: 20px;
     line-height: 20px;
 }
@@ -193,4 +194,20 @@ table thead td {
 .fade-in.ng-hide {
     opacity: 0;
     transform: scale(.7)
+}
+
+#git-branch-picker {
+    min-height: 0;
+    min-width: 0;
+    display: inline-block;
+    color: cyan;
+    text-decoration: none;
+    padding: 0;
+    margin: 0;
+    font-size: inherit;
+    font-family: inherit;
+    text-transform: none;
+    height: 20px;
+    line-height: 20px;
+    position: relative;
 }

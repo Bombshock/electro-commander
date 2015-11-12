@@ -141,27 +141,32 @@
                 <md-icon class="fa fa-times-circle"></md-icon>
             </md-button>
         </md-tab-label>
-        <md-tab-content class="console monospace">
-            <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
-        </md-tab-content>
+        <md-tab-body>
+            <div class="console monospace">
+                <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
+            </div>
+        </md-tab-body>
     </md-tab>
     <md-tab ng-click="$event.preventDefault(); tabs.new()">
         <md-tab-label>
             <md-icon class="fa fa-plus-circle"></md-icon>
         </md-tab-label>
+        <md-tab-content>
+            you shouldn't see this o.O
+        </md-tab-content>
     </md-tab>
 </md-tabs>
 
-<div ng-cloak class="input monospace fade-in" layout="row"
+<div ng-cloak class="input monospace" layout="row"
      ng-show="!$root.activeTab.child && !$root.activeTab.type && $root.tabs.length > 0">
-    <label>
+
+    <label for="THE_FUCKING_INPUT">
         {{$root.activeTab.cwd}}
-        <a ng-if="$root.activeTab.branch" style="color: cyan; text-decoration: none;" href="">
-        [{{$root.activeTab.branch}}]
-        </a>
+        <span id="git-branch-picker" ng-if="$root.activeTab.branch"> [{{$root.activeTab.branch.name}}] </span>
         >
     </label>
-    <input ng-model="activeTab.input" ng-keyup="submit($event, $root.activeTab)" flex type="text" tab-input>
+
+    <input ng-model="activeTab.input" id="THE_FUCKING_INPUT" ng-keyup="submit($event, $root.activeTab)" flex type="text" tab-input>
 </div>
 
 <!-- Angular Material Dependencies -->

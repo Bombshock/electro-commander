@@ -5,41 +5,34 @@
 
   angular.module("app").directive("mdTabContent", scrollDownDirective);
 
-  scrollDownDirective.$inject = ["$timeout"];
+  scrollDownDirective.$inject = ["mainProcess"];
 
-  function scrollDownDirective($timeout) {
+  function scrollDownDirective(mainProcess) {
     var isScrolling = false;
     return {
       restrict: 'E',
       require: '^?scrollDownTabs',
       link: function (scope, element, attributes, controller) {
         var el = element[0];
-        var ctrlDown = false;
 
         if (!controller) {
           return;
         }
 
-        var fn = debounce(function () {
+        var scrollDown = debounce(function () {
           scrollTo(el, el.scrollHeight - el.offsetHeight, 150);
-        }, 50);
+        }, 100);
 
-        window.addEventListener("keydown", function (event) {
-          if (event.keyCode === 17) {
-            ctrlDown = true;
-          }
-        });
-
-        window.addEventListener("keyup", function (event) {
-          if (event.keyCode === 17) {
-            ctrlDown = false;
+        mainProcess.on("cursorFree", function (cursorFree) {
+          if (!cursorFree) {
+            scrollDown();
           }
         });
 
         scope.$watch(function () {
-          if (!ctrlDown) {
+          if (!mainProcess.is("cursorFree")) {
             if (el.scrollTop < el.scrollHeight - el.offsetHeight) {
-              $timeout(fn, 0, false);
+              scrollDown();
             }
           }
         });

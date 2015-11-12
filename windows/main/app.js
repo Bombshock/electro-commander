@@ -6,6 +6,8 @@
 (function () {
   "use strict";
 
+  process.argv.push("--color");
+
   var fs = require("fs");
 
   fs.mkdir(__dirname + "/conf", function () {
@@ -23,22 +25,24 @@
       });
       $mdThemingProvider.definePalette('black', black);
 
+      //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('github')
-          .dark()
-          .accentPalette('grey')
-          .primaryPalette('blue')
-          .backgroundPalette('black');
+        .dark()
+        .accentPalette('grey')
+        .primaryPalette('blue')
+        .backgroundPalette('black');
 
       // Dark Theme
+      //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('dark')
-          .dark()
-          .accentPalette('grey', {
-            'default': '200'
-          })
-          .primaryPalette('orange', {
-            'default': '800'
-          })
-          .backgroundPalette('black');
+        .dark()
+        .accentPalette('grey', {
+          'default': '200'
+        })
+        .primaryPalette('orange', {
+          'default': '800'
+        })
+        .backgroundPalette('black');
 
       $mdThemingProvider.setDefaultTheme('dark');
     }
@@ -52,7 +56,6 @@
     "$timeout",
     function ($scope, execute, tabs, $q, $timeout) {
       var storage = localStorage || {};
-      var MAX_LINES = 250;
 
       $q.wait = function (time, arg) {
         var deferred = $q.defer();
@@ -62,6 +65,7 @@
         return deferred.promise;
       };
 
+      //noinspection JSUnresolvedVariable
       process.chdir(process.env.CWD || process.env.USERPROFILE);
 
       $scope.openMenu = function ($mdOpenMenu, ev) {
@@ -82,17 +86,30 @@
         $scope.activeTab = $scope.tabs[storage.selectedIndex];
       });
 
-      $scope.$watchCollection("activeTab.lines", function (lines) {
-        if (lines) {
-          while (lines.length > MAX_LINES) {
-            lines.shift();
-          }
-        }
-      });
-
       $scope.openUrl = window.openUrl = function (url) {
         require("open")(url);
       };
+
+      var shinanigans = 0;
+      var shinanigansCounter = 0, shinanigansCounterLast = 0;
+      var shinanigansThreshold = 200;
+
+      $scope.$watch(function () {
+        shinanigans++;
+        shinanigansCounter++;
+        setTimeout(function () {
+          shinanigans--;
+        }, 1000);
+      });
+
+      setInterval(function () {
+        if (shinanigans > shinanigansThreshold) {
+          console.error("shinanigans :: %s $applys/s", shinanigans);
+        } else if (shinanigansCounterLast !== shinanigansCounter) {
+          console.log("shinanigans :: counter:", shinanigansCounter);
+          shinanigansCounterLast = shinanigansCounter;
+        }
+      }, 1000);
     }
   ]);
 

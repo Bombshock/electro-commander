@@ -34,7 +34,7 @@
         } else if (char === " " && !escaped && i !== 0) {
           args.push(soFar);
           soFar = "";
-        } else if(char !== "\\") {
+        } else if (char !== "\\") {
           soFar += char;
         }
         last = char;
@@ -58,11 +58,15 @@
         return;
       }
 
+      args = args.filter(function (arg) {
+        return !!arg.trim();
+      });
+
       if (bin in bash) {
         Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
-            .finally(function () {
-              mainProcess.$emit("cycle");
-            });
+          .finally(function () {
+            mainProcess.$emit("cycle");
+          });
       } else {
         args.unshift(bin);
         args = ["/s", "/c"].concat(args);
@@ -73,6 +77,7 @@
           cwd: cwd
         });
 
+        tab.child.bin = bin;
         tab.child.command = input;
         tab.child.cwd = tab.cwd;
         tab.child.msg = message;
@@ -105,10 +110,11 @@
           }
         }
 
-        msg = msg.toString();
+        msg = msg.toString().split("\n");
 
-        if (msg.length > 0) {
-          tab.lines.push(new CMDMessage(msg));
+        for (var j = 0; j < msg.length; j++) {
+          var line = msg[j];
+          tab.lines.push(new CMDMessage(line));
         }
 
         mainProcess.$emit("cycle");
@@ -121,7 +127,13 @@
           msg = msg.stack ? msg.stack : msg.toString();
         }
 
-        tab.lines.push(new CMDMessage(msg, CMDMessage.TYPE_ERROR));
+        msg = msg.toString().split("\n");
+
+        for (var j = 0; j < msg.length; j++) {
+          var line = msg[j];
+          tab.lines.push(new CMDMessage(line, CMDMessage.TYPE_ERROR));
+        }
+
         mainProcess.$emit("cycle");
       }
     }

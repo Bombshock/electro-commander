@@ -11,9 +11,11 @@
   killService.$inject = [];
 
   function killService() {
-    return function kill(pid) {
-      return Q.npost(child_process, "exec", ["taskkill /pid " + pid + " /f /t "]);
-    };
+    return kill;
+  }
+
+  function kill(pid) {
+    return Q.npost(child_process, "exec", ["taskkill /pid " + pid + " /f /t "]);
   }
 
 })();

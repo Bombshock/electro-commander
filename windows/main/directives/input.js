@@ -11,59 +11,26 @@
 
   angular.module("app").directive("tabInput", inputDirective);
 
-  inputDirective.$inject = ["$timeout", "$rootScope"];
+  inputDirective.$inject = ["$timeout", "$rootScope", "mainProcess"];
 
-  function inputDirective($timeout, $rootScope) {
+  function inputDirective($timeout, $rootScope, mainProcess) {
     return {
       restrict: 'A',
       link: function (scope, element) {
         var tab = scope.$eval("activeTab");
-        var ctrlDown = false;
-        var lastTab = null;
+        var nativeInput = element[0];
 
         scope.$root.globalInput = element;
 
-        window.addEventListener("keydown", function (event) {
-          if (event.keyCode === 17) {
-            ctrlDown = true;
-          }
-        });
-
-        window.addEventListener("keyup", function (event) {
-          if (event.keyCode === 17) {
-            ctrlDown = false;
-            element.focus();
-          }
-        });
-
         $timeout(function () {
-          element.focus();
+          globalFocus();
         }, 100);
 
         element.on("blur", globalFocus);
         scope.$watch(globalFocus);
 
-        $rootScope.$watch("activeModal", function (activeModal) {
-          if (activeModal) {
-            element.blur();
-          } else {
-            element.focus();
-          }
-        });
-
-        function globalFocus() {
-          if (!ctrlDown && !$rootScope.activeModal) {
-            element.focus();
-          }
-        }
-
-        scope.$watch("activeTab.child", function (child) {
-          if (!child) {
-            $timeout(function () {
-              element.focus();
-            });
-          }
-        });
+        $rootScope.$watch("activeModal", globalBlurCondition);
+        mainProcess.on("flags.cursorFree", globalBlurCondition);
 
         scope.$watch("activeTab", function (activeTab) {
           if (activeTab) {
@@ -75,9 +42,21 @@
         scope.$watch("activeTab.input", function (input) {
           if (!input) {
             fsCache = {};
-            lastTab = null;
           }
         });
+
+        function globalBlurCondition(condition) {
+          if (condition && nativeInput === document.activeElement) {
+            element.blur();
+          }
+        }
+
+        function globalFocus() {
+          if (!$rootScope.activeModal && !mainProcess.is("cursorFree") &&
+            nativeInput !== document.activeElement && (tab &&!tab.child)) {
+            element.focus();
+          }
+        }
 
         element.on("keydown", function (event) {
           var TABKEY = 9;
@@ -88,24 +67,10 @@
             return;
           }
 
-          var doubleTabTimer = 200;
-
           if (event.keyCode === TABKEY) {
-            if (lastTab) {
-              var diff = Date.now() - lastTab;
-              console.log("diff", diff);
-              if (diff <= doubleTabTimer) {
-                event.preventDefault();
-                event.stopImmediatePropagation();
-                element.focus();
-                return doubleTab();
-              }
-            }
-
-            lastTab = Date.now();
             event.preventDefault();
             event.stopImmediatePropagation();
-            element.focus();
+            globalFocus();
 
             tab.input = tab.input || "";
 
@@ -218,11 +183,6 @@
             scope.$apply();
           }
         });
-
-        function doubleTab() {
-          scope.execute("ls", scope.activeTab);
-        }
-
       }
     };
   }

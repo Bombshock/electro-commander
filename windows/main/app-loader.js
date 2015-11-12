@@ -6,6 +6,7 @@ module.exports = function (document) {
   loadFolder("services", document);
   loadFolder("processes", document);
   loadFolder("directives", document);
+  loadFolder("../../bash", document);
 };
 
 function loadFolder(folder, document) {
@@ -19,9 +20,9 @@ function loadFolder(folder, document) {
   setTimeout(function () {
     for (var file in _folder) {
       if (_folder.hasOwnProperty(file)) {
-        var path = __dirname + '\\' + folder + '\\' + file + '.js';
+        var path = folder + '\\' + file + '.js';
         var fileref = document.createElement('script');
-        fileref.setAttribute("type", "text/javascript");
+        //fileref.setAttribute("type", "text/javascript");
         fileref.setAttribute("src", path);
         document.body.appendChild(fileref);
       }

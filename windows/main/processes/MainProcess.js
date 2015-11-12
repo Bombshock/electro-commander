@@ -19,7 +19,7 @@
       }
     }, 30);
 
-    $rootScope.$watch("activeTab", cycle);
+    //$rootScope.$watch("activeTab", cycle);
     $rootScope.$watch("activeTab.cwd", cycle);
   }
 

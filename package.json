@@ -5,6 +5,7 @@
   "main": "main.js",
   "scripts": {
     "start": "node start.js",
+    "start 2": "node start.js",
     "test": "echo Nope, no tests"
   },
   "repository": {
@@ -14,8 +15,10 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "colors": "^1.1.2",
     "easy-ipc": "latest",
     "electron-prebuilt": "latest",
+    "grunt": "^0.4.5",
     "include-all": "latest",
     "moment": "latest",
     "open": "latest",

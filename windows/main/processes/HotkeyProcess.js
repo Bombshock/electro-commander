@@ -7,18 +7,16 @@
 
   var currentWindow = require("remote").getCurrentWindow();
 
-  HotkeyProcessRun.$inject = ["$timeout", "$rootScope", "kill", "tabs", "execute"];
+  HotkeyProcessRun.$inject = ["$timeout", "$rootScope", "kill", "tabs", "execute", "mainProcess"];
 
-  function HotkeyProcessRun($timeout, $rootScope, kill, tabs, execute) {
+  function HotkeyProcessRun($timeout, $rootScope, kill, tabs, execute, mainProcess) {
 
     $rootScope.killTabChild = killTabChild;
     $rootScope.restartTabChild = restartTabChild;
 
     window.addEventListener("keyup", function ($event) {
       if (!$rootScope.activeModal) {
-        $timeout(function () {
-          globalKeyEvent($event);
-        });
+        globalKeyEvent($event);
       }
     });
 
@@ -26,26 +24,42 @@
       var tab = $rootScope.activeTab;
 
       if (tab && ($event.keyCode === 99 || $event.keyCode === 67) && $event.ctrlKey && tab.child) { //ctrl-c
-        killTabChild(tab);
+        $timeout(function () {
+          killTabChild(tab);
+        });
       }
 
       if ($event.altKey && $event.keyCode === 39) { //alt-right
-        $rootScope.selectedIndex = $rootScope.selectedIndex < $rootScope.tabs.length - 1 ? $rootScope.selectedIndex + 1 : 0;
+        $timeout(function () {
+          $rootScope.selectedIndex = $rootScope.selectedIndex < $rootScope.tabs.length - 1 ? $rootScope.selectedIndex + 1 : 0;
+        });
       }
 
       if ($event.altKey && $event.keyCode === 37) { //alt-left
-        $rootScope.selectedIndex = $rootScope.selectedIndex > 0 ? $rootScope.selectedIndex - 1 : $rootScope.tabs.length - 1;
+        $timeout(function () {
+          $rootScope.selectedIndex = $rootScope.selectedIndex > 0 ? $rootScope.selectedIndex - 1 : $rootScope.tabs.length - 1;
+        });
       }
 
       if ($event.ctrlKey && $event.keyCode === 68) { //ctrl-d
-        tabs.remove(tab);
+        $timeout(function () {
+          tabs.remove(tab);
+        });
       }
 
       if ($event.ctrlKey && $event.keyCode === 84) { //ctrl-t
-        tabs.new();
+        $timeout(function () {
+          tabs.new();
+        });
       }
 
-      if ($event.keyCode === 27) { //ctrl-t
+      if ($event.ctrlKey && $event.keyCode === 81) { //ctrl-q
+        $timeout(function () {
+          mainProcess.toggle("cursorFree");
+        });
+      }
+
+      if ($event.keyCode === 27) { //esc
         currentWindow.hide();
       }
     }

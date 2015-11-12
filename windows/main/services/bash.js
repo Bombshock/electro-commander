@@ -3,15 +3,21 @@
 (function () {
   'use strict';
 
-  angular.module("app").service("bash", bashService);
+  angular.module("app").provider("bash", bashProvider);
 
-  bashService.$inject = [];
+  bashProvider.$inject = [];
 
-  function bashService() {
-    return require('include-all')({
-      dirname: __dirname + '\\..\\..\\..\\bash',
-      filter: /(.*)\.js$/
-    });
+  /*jshint -W040*/
+  function bashProvider() {
+    var bash = {};
+
+    this.register = function (namespace, fn) {
+      bash[namespace] = fn;
+    };
+
+    this.$get = function () {
+      return bash;
+    };
   }
 
 })();

@@ -1,183 +1,184 @@
 md-fab-toolbar .md-fab-toolbar-wrapper {
-    height: auto;
+  height: auto;
 }
 
 md-icon.fa {
-    font-size: 1.4em;
-    line-height: 24px;
+  font-size: 1.4em;
+  line-height: 24px;
 }
 
 body, html {
-    color: #EEE;
-    background-color: #222;
+  color: #EEE;
+  background-color: #222;
 }
 
 .monospace {
-    font-family: monospace;
+  font-family: monospace;
 }
 
 a {
-    color: rgb(21, 101, 192);
+  color: rgb(21, 101, 192);
 }
 
 #button-overlay {
-    position: absolute;
-    top: 49px;
-    left: 0;
-    right: 0;
+  position: absolute;
+  top: 49px;
+  left: 0;
+  right: 0;
 }
 
 #fab {
-    width: 100%;
+  width: 100%;
 }
 
 #speedDial {
-    position: absolute;
-    top: 65px;
-    right: 0;
+  position: absolute;
+  top: 65px;
+  right: 0;
 }
 
 #npm {
-    position: absolute;
-    top: 130px;
-    right: 0;
+  position: absolute;
+  top: 130px;
+  right: 0;
 }
 
 .console, .input {
-    padding: 5px;
+  padding: 5px;
 }
 
 .console {
-    overflow-x: hidden;
-    overflow-y: auto;
-    padding-right: 72px;
-    padding-bottom: 5px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 72px;
+  padding-bottom: 5px;
 }
 
 .console pre {
-    margin-bottom: 0;
-    margin-top: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+  min-height: 16px;
 }
 
 .input {
-    color: #EEE;
-    margin: 0;
-    height: 26px;
-    padding: 5px 7px;
+  color: #EEE;
+  margin: 0;
+  height: 26px;
+  padding: 5px 7px;
 }
 
 .input > input {
-    background-color: transparent;
-    color: #FFF;
-    border: 0;
-    outline: 0;
-    margin-left: 5px;
-    font-family: monospace;
-    height: 20px;
-    line-height: 20px;
+  background-color: transparent;
+  color: #FFF;
+  border: 0;
+  outline: 0;
+  margin-left: 5px;
+  font-family: monospace;
+  height: 20px;
+  line-height: 20px;
 }
 
 .input > label {
-    padding: 0;
-    height: 20px;
-    line-height: 20px;
+  padding: 0;
+  height: 20px;
+  line-height: 20px;
 }
 
 #tabs md-tabs-wrapper {
-    -webkit-box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
-    -moz-box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
-    box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
-    z-index: 2;
+  -webkit-box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
+  -moz-box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
+  box-shadow: 0 0 25px 5px rgba(0, 0, 0, 1);
+  z-index: 2;
 }
 
 #tabs md-tabs-content-wrapper {
-    z-index: 1;
+  z-index: 1;
 }
 
 pre {
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
 }
 
 pre.error,
 pre.success,
 pre.default {
-    margin-left: 10px;
-    padding-left: 10px;
-    border-left: 2px solid #666;
+  margin-left: 10px;
+  padding-left: 10px;
+  border-left: 2px solid #666;
 }
 
 pre.command {
-    padding: 5px 7px;
-    color: #AAA;
+  padding: 5px 7px;
+  color: #AAA;
 }
 
 pre.error {
-    border-color: rgb(244, 67, 54);
-    color: rgb(244, 67, 54);
+  border-color: rgb(244, 67, 54);
+  color: rgb(244, 67, 54);
 }
 
 pre.success {
-    border-color: orange;
-    color: #999;
-    padding-top: 5px;
-    padding-bottom: 5px;
+  border-color: orange;
+  color: #999;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    padding: 5px;
+  width: 6px;
+  padding: 5px;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-    background-color: #444;
+  background-color: #444;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background: #777;
+  background: #777;
 }
 
 ::-webkit-scrollbar-thumb:window-inactive {
-    background: #777;
+  background: #777;
 }
 
 .fa.current-task {
-    font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 md-dialog-actions {
-    order: 2;
+  order: 2;
 }
 
 .md-fab .fa.fa-github {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
 }
 
 table {
-    width: 100%;
+  width: 100%;
 }
 
 table thead tr {
 }
 
 table td {
-    padding: 10px 15px;
+  padding: 10px 15px;
 }
 
 table tbody tr:nth-child(even) {
-    background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 table thead td {
-    text-transform: uppercase;
-    font-size: 1.2em;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  text-transform: uppercase;
+  font-size: 1.2em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }

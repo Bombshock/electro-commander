@@ -1,13 +1,26 @@
-/*global module*/
-/*global require*/
+/*global angular*/
 
-"use strict";
+(function () {
+  'use strict';
 
-module.exports = function (args, stdout, stderr, tab) {
-    tab.lines = [];
-    tab.history = [];
-};
+  var sprintf = require("sprintf-js").sprintf;
 
-module.exports.help = [
-    require("sprintf-js").sprintf("%-30s %s", "cls", "clears the screen")
-];
+  angular.module("app").config(clsConfig);
+
+  clsConfig.$inject = ["bashProvider"];
+
+  function clsConfig(bash) {
+    //noinspection JSUnusedLocalSymbols
+    function cls(args, stdout, stderr, tab) {
+      tab.lines = [];
+      tab.history = [];
+    }
+
+    cls.help = [
+      sprintf("%-30s %s", "cls", "clears the screen")
+    ];
+
+    bash.register("cls", cls);
+  }
+
+})();

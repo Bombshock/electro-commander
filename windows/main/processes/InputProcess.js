@@ -17,7 +17,6 @@
         var args = input.split(" ");
 
         args.shift();
-
         tab.input = "";
 
         if ($event.ctrlKey === true) {

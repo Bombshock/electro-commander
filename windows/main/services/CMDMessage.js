@@ -32,8 +32,8 @@
       var open = 0;
       var replaced = this.message;
 
-      replaced = replaced.replace(/(\[\d+m)/ig, function (int) {
-        int = int.replace("[", "");
+      replaced = replaced.replace(/\x1b*\[\d+m/ig, function (found) {
+        var int = /\d+/.exec(found)[0];
         int = parseInt(int);
         var out = "";
         if (int === 0 || int === 49 || int === 39 || int === 24) {

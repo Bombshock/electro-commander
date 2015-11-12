@@ -11,6 +11,8 @@
   mainProcessService.$inject = ["$timeout"];
 
   function mainProcessService($timeout) {
+    var flags = {};
+
     util.inherits(MainProcess, EventEmitter);
 
     function MainProcess() {
@@ -23,6 +25,16 @@
       $timeout(function () {
         main.emit.apply(main, args);
       });
+    };
+
+    MainProcess.prototype.toggle = function (flag) {
+      flags[flag] = !flags[flag];
+      console.log("MainProcess :: flag: %s => %s", flag, flags[flag]);
+      this.$emit("flags." + flag, flags[flag]);
+    };
+
+    MainProcess.prototype.is = function (flag) {
+      return flags[flag];
     };
 
     return new MainProcess();

@@ -17,7 +17,7 @@
 
   angular.module("app").config([
     "$mdThemingProvider",
-    function ($mdThemingProvider) {
+    function ($mdThemingProvider, tabs) {
 
       //black background color
       var black = $mdThemingProvider.extendPalette('grey', {
@@ -27,22 +27,22 @@
 
       //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('github')
-        .dark()
-        .accentPalette('grey')
-        .primaryPalette('blue')
-        .backgroundPalette('black');
+          .dark()
+          .accentPalette('grey')
+          .primaryPalette('blue')
+          .backgroundPalette('black');
 
       // Dark Theme
       //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('dark')
-        .dark()
-        .accentPalette('grey', {
-          'default': '200'
-        })
-        .primaryPalette('orange', {
-          'default': '800'
-        })
-        .backgroundPalette('black');
+          .dark()
+          .accentPalette('grey', {
+            'default': '200'
+          })
+          .primaryPalette('orange', {
+            'default': '800'
+          })
+          .backgroundPalette('black');
 
       $mdThemingProvider.setDefaultTheme('dark');
     }
@@ -100,6 +100,21 @@
         setTimeout(function () {
           shinanigans--;
         }, 1000);
+      });
+
+      $scope.$watchGroup(["selectedIndex", "tabs.length"], function () {
+        $timeout(function (){
+          if($scope.tabs.length > 0){
+            if ($scope.selectedIndex === $scope.tabs.length) {
+              $scope.selectedIndex--;
+            }
+            if($scope.selectedIndex < 0 || $scope.selectedIndex > $scope.tabs.length){
+              $scope.selectedIndex = 0;
+            }
+          } else {
+            $scope.selectedIndex = -1;
+          }
+        });
       });
 
       setInterval(function () {

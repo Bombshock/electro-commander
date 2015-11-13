@@ -29,6 +29,18 @@
         });
       }
 
+      if ($event.altKey && $event.keyCode >= 48 && $event.keyCode <= 57) { //alt [0-9]
+        var number = $event.keyCode - 49;
+        if (number < 0) {
+          number = 9;
+        }
+        if (number < tabs.length) {
+          $timeout(function () {
+            $rootScope.selectedIndex = number;
+          });
+        }
+      }
+
       if ($event.altKey && $event.keyCode === 39) { //alt-right
         $timeout(function () {
           $rootScope.selectedIndex = $rootScope.selectedIndex < $rootScope.tabs.length - 1 ? $rootScope.selectedIndex + 1 : 0;

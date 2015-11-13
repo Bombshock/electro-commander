@@ -33,27 +33,27 @@
 
   app.on('ready', function () {
     ipc
-        .on('listening', function () {
-          masterProcess();
-          ipc.on('data', function (data, conn) {
-            if (masterIpc) {
-              masterIpc.send('argv', data);
-            }
-            conn.write(true);
-          });
-        })
-        .once('connect', function (conn) {
-          conn.write(process.argv);
-          ipc.on('data', function (data, conn) {
-            if (data === true) {
-              conn.end();
-            }
-          });
-          ipc.on('close', function () {
-            process.exit(0);
-          });
-        })
-        .start();
+      .on('listening', function () {
+        masterProcess();
+        ipc.on('data', function (data, conn) {
+          if (masterIpc) {
+            masterIpc.send('argv', data);
+          }
+          conn.write(true);
+        });
+      })
+      .once('connect', function (conn) {
+        conn.write(process.argv);
+        ipc.on('data', function (data, conn) {
+          if (data === true) {
+            conn.end();
+          }
+        });
+        ipc.on('close', function () {
+          process.exit(0);
+        });
+      })
+      .start();
   });
 
   function masterProcess() {
@@ -119,12 +119,12 @@
 
     mainWindow.setTitle("electro-commander");
 
-    mainWindow.on("close", function close(event) {
-      mainWindow.hide();
+    mainWindow.on("close", function () {
       saveConfig();
-      event.preventDefault();
+      trayIcon.destroy();
     });
-
+    mainWindow.on("resize", saveConfig);
+    mainWindow.on("move", saveConfig);
     mainWindow.on('closed', exit);
   }
 
@@ -132,7 +132,6 @@
 
   function exit() {
     trayIcon.destroy();
-    saveConfig();
     exec("taskkill /pid " + process.pid + " /f /t ");
   }
 

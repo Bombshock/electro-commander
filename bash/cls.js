@@ -13,7 +13,6 @@
     //noinspection JSUnusedLocalSymbols
     function cls(args, stdout, stderr, tab) {
       tab.lines = [];
-      tab.history = [];
     }
 
     cls.help = [

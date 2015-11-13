@@ -6,9 +6,7 @@
   var currentWindow = require("remote").getCurrentWindow();
 
   angular.module("app").run(WindowTitleProcess);
-
   WindowTitleProcess.$inject = ["mainProcess"];
-
   function WindowTitleProcess(mainProcess) {
     mainProcess.on("cycle", windowTitleCycle);
 

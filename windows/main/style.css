@@ -187,7 +187,7 @@ table thead td {
 .fade-in.ng-hide-remove-active,
 .fade-in.ng-hide-add {
     /* the transition is defined in the active class */
-    transition: .2s ease all;
+    transition: .2s ease-in-out all;
     opacity: 1;
 }
 

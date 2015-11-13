@@ -17,7 +17,7 @@
 
   angular.module("app").config([
     "$mdThemingProvider",
-    function ($mdThemingProvider, tabs) {
+    function ($mdThemingProvider) {
 
       //black background color
       var black = $mdThemingProvider.extendPalette('grey', {

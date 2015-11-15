@@ -12,17 +12,12 @@
 
   angular.module("app").run(GitBranchProcess);
 
-  GitBranchProcess.$inject = ["mainProcess", "$timeout", "$rootScope", "$mdDialog", "$q", "debounce", "execute"];
+  GitBranchProcess.$inject = ["mainProcess", "$timeout", "$rootScope", "$mdDialog", "$q", "debounce"];
 
-  function GitBranchProcess(mainProcess, $timeout, $rootScope, $mdDialog, $q, debounce, execute) {
+  function GitBranchProcess(mainProcess, $timeout, $rootScope, $mdDialog, $q, debounce) {
 
     $rootScope.gitModal = gitModal;
     $rootScope.gitModalOpened = false;
-
-    function clean(tab) {
-      delete tab.branches;
-      delete tab.branch;
-    }
 
     mainProcess.on("tab.cwd", function (cwd, tab) {
       gitHandler(tab);
@@ -44,6 +39,8 @@
       }
       var gitFolder;
 
+      tab.git = tab.git || {};
+
       try {
         fs.readdirSync(tab.cwd + "\\.git");
         gitFolder = true
@@ -54,23 +51,69 @@
       if (gitFolder) {
         getBranches(tab)
             .then(function (branches) {
-              tab.branches = branches;
+              tab.git.branches = branches;
               for (var i = 0; i < branches.length; i++) {
                 var branch = branches[i];
                 if (branch.active) {
-                  tab.branch = branch;
+                  tab.git.branch = branch;
                   break;
                 }
               }
             })
-            .catch(clean)
+            .catch(function (err) {
+              console.error(err.stack ? err.stack : err);
+              delete tab.git.branch;
+              delete tab.git.branches;
+            })
+            .finally(function () {
+              if (!$rootScope.$$phase) {
+                $rootScope.$apply();
+              }
+            });
+
+        getChanges(tab)
+            .then(function (changes) {
+              tab.git.changes = changes;
+            })
+            .catch(function (err) {
+              console.error(err.stack ? err.stack : err);
+              delete tab.git.changes;
+            })
+            .finally(function () {
+              if (!$rootScope.$$phase) {
+                $rootScope.$apply();
+              }
+            });
+
+        getHistory(tab)
+            .then(function (history) {
+              tab.git.history = history;
+            })
+            .catch(function (err) {
+              console.error(err.stack ? err.stack : err);
+              delete tab.git.history;
+            })
+            .finally(function () {
+              if (!$rootScope.$$phase) {
+                $rootScope.$apply();
+              }
+            });
+
+        getUnversionedFiles(tab)
+            .then(function (unversioned) {
+              tab.git.unversioned = unversioned;
+            })
+            .catch(function (err) {
+              console.error(err.stack ? err.stack : err);
+              delete tab.git.unversioned;
+            })
             .finally(function () {
               if (!$rootScope.$$phase) {
                 $rootScope.$apply();
               }
             });
       } else {
-        clean(tab);
+        delete tab.git;
       }
     }
 
@@ -105,14 +148,16 @@
 
     DialogController.$inject = ["$scope", "$mdDialog", "tab", "selectedIndex"];
     function DialogController($scope, $mdDialog, tab, selectedIndex) {
-      var regexChanges = /diff --git a\/(.*) b\/(.*)/ig;
-      var regexUnversioned = /Would remove (.*)/ig;
 
       $scope.loadingUnversioned = true;
       $scope.loadingChanges = true;
       $scope.loadingHistory = true;
       $scope.selectedIndex = selectedIndex;
       $scope.tab = tab;
+
+      $scope.commit = function () {
+        gitCommit(tab, tab.git.commitMessage);
+      };
 
       $scope.$watch("tab.branch.name", function (name) {
         if (name) {
@@ -124,75 +169,11 @@
         child_process.exec("git checkout " + branchName, {cwd: tab.cwd});
       }
 
-      require("child_process").exec("git diff", {
-        cwd: tab.cwd
-      }, function (error, stdout) {
-        $scope.loading = false;
-        $timeout(function () {
-          if (!error) {
-
-            var match;
-            var matches = [];
-
-            do {
-              match = regexChanges.exec(stdout);
-              if (match) {
-                matches.push(match[1]);
-              }
-            } while (match);
-
-            $scope.matchesChanges = matches;
-          }
-          $scope.loadingChanges = false;
-        });
-      });
-
-      require("child_process").exec("git clean -n", {
-        cwd: tab.cwd
-      }, function (error, stdout) {
-        $scope.loading = false;
-        $timeout(function () {
-          if (!error) {
-
-            var match;
-            var matches = [];
-
-            do {
-              match = regexUnversioned.exec(stdout);
-              if (match) {
-                matches.push(match[1]);
-              }
-            } while (match);
-
-            $scope.matchesUnversioned = matches;
-          }
-          $scope.loadingUnversioned = false;
-        });
-      });
-
-      $q.wait(0).then(function () {
-        require("child_process").exec("git log --pretty=format:\"{'hash': '%h', 'author':'%an', 'date':'%ar', 'message':'%s'},\"".replace(/'/gi, "\\\""), {
-          cwd: tab.cwd
-        }, function (error, stdout) {
-          stdout = stdout.replace(/,$/gi, "");
-          $scope.loading = false;
-          $timeout(function () {
-            if (!error) {
-              $scope.matchesHistory = JSON.parse("[" + stdout + "]");
-            }
-            $scope.loadingHistory = false;
-          });
-        });
-      });
-
       $scope.hide = function () {
         $mdDialog.hide();
       };
       $scope.cancel = function () {
         $mdDialog.cancel();
-      };
-      $scope.answer = function (answer) {
-        $mdDialog.hide(answer);
       };
     }
   }
@@ -215,6 +196,54 @@
 
           return branches;
         })
+  }
+
+  function getChanges(tab) {
+    var regexChanges = /diff --git a\/(.*) b\/(.*)/ig;
+    return Q.npost(child_process, "exec", ["git diff", {cwd: tab.cwd}])
+        .then(function (result) {
+          var match;
+          var matches = [];
+
+          do {
+            match = regexChanges.exec(result);
+            if (match) {
+              matches.push(match[1]);
+            }
+          } while (match);
+          return matches;
+        });
+  }
+
+  function getUnversionedFiles(tab) {
+    var regexUnversioned = /Would remove (.*)/ig;
+    return Q.npost(child_process, "exec", ["git clean -n", {cwd: tab.cwd}])
+        .then(function (result) {
+          var match;
+          var matches = [];
+
+          do {
+            match = regexUnversioned.exec(result);
+            if (match) {
+              matches.push(match[1]);
+            }
+          } while (match);
+
+          return matches;
+        });
+  }
+
+  function getHistory(tab) {
+    return Q.npost(child_process, "exec", ['git log --pretty=format:"{\\"hash\\": \\"%h\\", \\"author\\":\\"%an\\", \\"date\\":\\"%ar\\", \\"message\\":\\"%s\\"},\"', {cwd: tab.cwd}])
+        .then(function (result) {
+          result = result[0].replace(/,$/gi, "");
+          return JSON.parse("[" + result + "]");
+        });
+  }
+
+  function gitCommit(tab, message) {
+    message = message.replace(/"/gi, "\\\"");
+    return Q.npost(child_process, "exec", ['git commit -a -m "' + message + '"', {cwd: tab.cwd}]);
   }
 
 })();

@@ -8,8 +8,8 @@
             <span flex></span>
 
             <md-input-container style="padding: 0;">
-                <md-select ng-model="tab.branch" placeholder="branch">
-                    <md-option ng-repeat="branch in tab.branches" ng-value="branch">
+                <md-select ng-model="tab.git.branch" placeholder="branch">
+                    <md-option ng-repeat="branch in tab.git.branches" ng-value="branch">
                         {{branch.name}}
                     </md-option>
                 </md-select>
@@ -21,45 +21,44 @@
         </div>
     </md-toolbar>
     <md-dialog-content flex layout="row">
-        <md-tabs md-border-bottom md-autoselect flex md-selected="selectedIndex">
-            <md-tab label="two">
-                <md-content class="md-padding">
-                    <h1 class="md-display-2">Tab Two</h1>
+        <md-tabs md-border-bottom md-autoselect flex md-selected="tab.git.selectedIndex">
 
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue.
-                        Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In sodales
-                        pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec, feugiat ultricies
-                        mi. Aliquam erat volutpat. Nam placerat, tortor in ultrices porttitor, orci enim rutrum
-                        enim, vel tempor sapien arcu a tellus. Vivamus convallis sodales ante varius gravida.
-                        Curabitur a purus vel augue ultrices ultricies id a nisl. Nullam malesuada consequat diam, a
-                        facilisis tortor volutpat et. Sed urna dolor, aliquet vitae posuere vulputate, euismod ac
-                        lorem. Sed felis risus, pulvinar at interdum quis, vehicula sed odio. Phasellus in enim
-                        venenatis, iaculis tortor eu, bibendum ante. Donec ac tellus dictum neque volutpat blandit.
-                        Praesent efficitur faucibus risus, ac auctor purus porttitor vitae. Phasellus ornare dui nec
-                        orci posuere, nec luctus mauris semper.</p>
+            <!-- COMMIT -->
+            <md-tab>
+                <md-tab-label>
+                    commit
+                </md-tab-label>
+                <md-tab-body>
+                    <md-content class="md-padding">
 
-                    <p>Morbi viverra, ante vel aliquet tincidunt, leo dolor pharetra quam, at semper massa orci nec
-                        magna. Donec posuere nec sapien sed laoreet. Etiam cursus nunc in condimentum facilisis.
-                        Etiam in tempor tortor. Vivamus faucibus egestas enim, at convallis diam pulvinar vel. Cras
-                        ac orci eget nisi maximus cursus. Nunc urna libero, viverra sit amet nisl at, hendrerit
-                        tempor turpis. Maecenas facilisis convallis mi vel tempor. Nullam vitae nunc leo. Cras sed
-                        nisl consectetur, rhoncus sapien sit amet, tempus sapien.</p>
+                        <form name="gitCommit">
+                            <md-input-container class="md-block md-input-invalid">
+                                <label>Commit message</label>
+                                <textarea required ng-model="tab.git.commitMessage" rows="2"
+                                          md-maxlength="150" name="message" md-autofocus></textarea>
+                                <div ng-messages="gitCommit.message.$error">
+                                    <div ng-message="required">This is required.</div>
+                                </div>
+                            </md-input-container>
 
-                    <p>Integer turpis erat, porttitor vitae mi faucibus, laoreet interdum tellus. Curabitur posuere
-                        molestie dictum. Morbi eget congue risus, quis rhoncus quam. Suspendisse vitae hendrerit
-                        erat, at posuere mi. Cras eu fermentum nunc. Sed id ante eu orci commodo volutpat non ac
-                        est. Praesent ligula diam, congue eu enim scelerisque, finibus commodo lectus.</p>
-                </md-content>
+                            <md-input-container class="md-block">
+                                <label>Create Tag</label>
+                                <input ng-model="tab.git.newTag"/>
+                            </md-input-container>
+                        </form>
+
+                    </md-content>
+                </md-tab-body>
             </md-tab>
 
             <!-- CHANGES -->
             <md-tab>
                 <md-tab-label>
-                    changes ({{matchesChanges.length || 0}})
+                    changes <span class="label" ng-show="tab.git.changes.length">{{tab.git.changes.length || 0}}</span>
                 </md-tab-label>
                 <md-tab-body class="md-padding">
                     <md-list>
-                        <md-list-item ng-repeat-start="match in matchesChanges">
+                        <md-list-item ng-repeat-start="match in tab.git.changes">
                             <p> {{ match }} </p>
                         </md-list-item>
                         <md-divider ng-repeat-end>
@@ -70,32 +69,16 @@
             <!-- UNRESOLVED -->
             <md-tab>
                 <md-tab-label>
-                    unversioned ({{matchesUnversioned.length || 0}})
+                    unversioned <span class="label" ng-show="tab.git.unversioned.length">{{tab.git.unversioned.length || 0}}</span>
                 </md-tab-label>
                 <md-tab-body class="md-padding">
                     <md-list>
-                        <md-list-item ng-repeat-start="match in matchesUnversioned" ng-click="lol()">
+                        <md-list-item ng-repeat-start="match in tab.git.unversioned" ng-click="lol()">
                             <p> {{ match }} </p>
-                            <md-icon class="fa fa-plus" aria-label="add" ng-click=""></md-icon>
+                            <md-icon class="fa fa-plus" aria-label="add"
+                                     ng-click="$root.execute('git add ' + match, tab)"></md-icon>
                         </md-list-item>
                         <md-divider ng-repeat-end>
-                    </md-list>
-                </md-tab-body>
-            </md-tab>
-
-            <!-- BRANCHES -->
-            <md-tab>
-                <md-tab-label>
-                    Branches ({{tab.branches.length}})
-                </md-tab-label>
-                <md-tab-body class="md-padding">
-                    <md-list>
-                        <md-list-item ng-repeat-start="branch in tab.branches"
-                                      ng-click="$root.selectGitBranch(branch.name, tab)">
-                            <p> {{ branch.name }} </p>
-                            <md-icon class="fa fa-asterisk" ng-if="branch.active"></md-icon>
-                        </md-list-item>
-                        <md-divider ng-repeat-end ng-if="!$last">
                     </md-list>
                 </md-tab-body>
             </md-tab>
@@ -106,31 +89,41 @@
                     history
                 </md-tab-label>
                 <md-tab-body test-attr>
-                    <md-content class="" ng-if="matchesHistory">
-                        <table>
-                            <thead>
-                            <tr>
-                                <td>message</td>
-                                <td>author</td>
-                                <td>date</td>
-                                <td>hash</td>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr ng-repeat="match in matchesHistory">
-                                <td>{{match.message}}</td>
-                                <td>{{match.author}}</td>
-                                <td>{{match.date}}</td>
-                                <td>{{match.hash}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                    <md-content class="" ng-if="tab.git.history"
+                    ">
+                    <table>
+                        <thead>
+                        <tr>
+                            <td>message</td>
+                            <td>author</td>
+                            <td>date</td>
+                            <td>hash</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="match in tab.git.history">
+                            <td>{{match.message}}</td>
+                            <td>{{match.author}}</td>
+                            <td>{{match.date}}</td>
+                            <td>{{match.hash}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
                     </md-content>
-                    <div layout="row" layout-sm="column" layout-align="space-around" ng-if="!matchesHistory">
+                    <div layout="row" layout-sm="column" layout-align="space-around" ng-if="!tab.git.history">
                         <md-progress-circular md-mode="indeterminate" style="margin: 50px;"></md-progress-circular>
                     </div>
                 </md-tab-body>
             </md-tab>
         </md-tabs>
     </md-dialog-content>
+    <md-dialog-actions layout="row" ng-show="!tab.git.loading && tab.git.selectedIndex === 0">
+        <span flex></span>
+        <md-button ng-click="commit()">
+            Commit
+        </md-button>
+        <md-button ng-click="answer('useful')" style="margin-right:20px;">
+            Commit & Push
+        </md-button>
+    </md-dialog-actions>
 </md-dialog>

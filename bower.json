@@ -14,7 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "angular-material": "latest",
+    "angular-material": "1.x.x",
     "fontawesome": "latest"
   }
 }

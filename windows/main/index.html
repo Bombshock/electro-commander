@@ -95,7 +95,7 @@
         </md-menu>
     </div>
 
-    <div ng-show="$root.activeTab.branch" md-theme="github" class="fade-in">
+    <div ng-show="$root.activeTab.git" md-theme="github" class="fade-in">
         <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.gitModal($event, $root.activeTab)">
             <md-tooltip md-direction="left">
                 Git
@@ -135,7 +135,6 @@
 
             <md-button
                     style="  margin: -5px 0 0 0; min-width: 40px; padding: 0; position: relative; top: -1px; right: -15px;"
-                    ng-if="$root.activeTab === tab"
                     ng-click="tabs.remove(tab)"
                     aria-label="close tab">
                 <md-icon class="fa fa-times-circle"></md-icon>
@@ -162,7 +161,7 @@
 
     <label for="THE_FUCKING_INPUT">
         {{$root.activeTab.cwd}}
-        <span id="git-branch-picker" ng-show="$root.activeTab.branch"> [{{$root.activeTab.branch.name}}] </span>
+        <span id="git-branch-picker" ng-show="$root.activeTab.git.branch"> [{{$root.activeTab.git.branch.name}}] </span>
         >
     </label>
 

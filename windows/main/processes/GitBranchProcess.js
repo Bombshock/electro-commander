@@ -155,6 +155,8 @@
       $scope.selectedIndex = selectedIndex;
       $scope.tab = tab;
 
+
+      
       $scope.commit = function () {
         gitCommit(tab, tab.git.commitMessage)
             .then(function () {

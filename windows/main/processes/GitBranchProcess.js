@@ -156,7 +156,15 @@
       $scope.tab = tab;
 
       $scope.commit = function () {
-        gitCommit(tab, tab.git.commitMessage);
+        gitCommit(tab, tab.git.commitMessage)
+            .then(function () {
+              delete tab.git.commitMessage;
+            })
+            .finally(function () {
+              if (!$rootScope.$$phase) {
+                $rootScope.$apply();
+              }
+            });
       };
 
       $scope.$watch("tab.branch.name", function (name) {

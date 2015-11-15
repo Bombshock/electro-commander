@@ -45,6 +45,14 @@
                                 <label>Create Tag</label>
                                 <input ng-model="tab.git.newTag"/>
                             </md-input-container>
+
+                            <md-list ng-if="tab.git.newTag">
+                                <md-list-item ng-if="tab.packageJson">
+                                    <p> sync package.json </p>
+                                    <md-checkbox class="md-primary" ng-model="tag.git.sync.packageJson"></md-checkbox>
+                                </md-list-item>
+                            </md-list>
+
                         </form>
 
                     </md-content>
@@ -56,7 +64,7 @@
                 <md-tab-label>
                     changes <span class="label" ng-show="tab.git.changes.length">{{tab.git.changes.length || 0}}</span>
                 </md-tab-label>
-                <md-tab-body class="md-padding">
+                <md-tab-body class="md-padding" flex>
                     <md-list>
                         <md-list-item ng-repeat-start="match in tab.git.changes">
                             <p> {{ match }} </p>

@@ -4,6 +4,8 @@
   'use strict';
 
   var Q = require("q");
+  var child_process = require("child_process");
+  var readline = require('readline');
 
   angular.module("app").service("execute", executeService);
 
@@ -12,8 +14,7 @@
   function executeService(CMDMessage, bash, mainProcess) {
 
     function spawn() {
-      /*jshint -W040*/
-      return require("child_process").spawn.apply(this, arguments);
+      return child_process.spawn.apply(child_process, arguments);
     }
 
     function execute(line, tab, cwd) {
@@ -64,9 +65,9 @@
 
       if (bin in bash) {
         Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
-          .finally(function () {
-            mainProcess.$emit("cycle");
-          });
+            .finally(function () {
+              mainProcess.$emit("cycle");
+            });
       } else {
         args.unshift(bin);
         args = ["/s", "/c"].concat(args);
@@ -82,8 +83,8 @@
         tab.child.cwd = tab.cwd;
         tab.child.msg = message;
 
+        tab.child.on('message', stdout);
         tab.child.stdout.on('data', stdout);
-
         tab.child.stderr.on('data', stderr);
 
         tab.child.on('close', function (code) {

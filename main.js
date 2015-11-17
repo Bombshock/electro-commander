@@ -26,6 +26,16 @@
     reconnect: false
   });
 
+  function getConfig() {
+    var config;
+    try {
+      config = JSON.parse(fs.readFileSync(__dirname + "\\windows\\main\\conf\\config.json"));
+    } catch (ex) {
+      config = {};
+    }
+    return config;
+  }
+
   electron_ipc.on('ping', function (event) {
     masterIpc = event.sender;
     event.returnValue = 'pong';
@@ -119,10 +129,15 @@
 
     mainWindow.setTitle("electro-commander");
 
-    mainWindow.on("close", function () {
+    mainWindow.on("close", function (event) {
+      var config = getConfig();
+      if (config.general && config.general.exitToTray) {
+        mainWindow.hide();
+        event.preventDefault();
+      }
       saveConfig();
-      trayIcon.destroy();
     });
+
     mainWindow.on("resize", saveConfig);
     mainWindow.on("move", saveConfig);
     mainWindow.on('closed', exit);

@@ -27,22 +27,22 @@
 
       //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('github')
-          .dark()
-          .accentPalette('grey')
-          .primaryPalette('blue')
-          .backgroundPalette('black');
+        .dark()
+        .accentPalette('grey')
+        .primaryPalette('blue')
+        .backgroundPalette('black');
 
       // Dark Theme
       //noinspection JSUnresolvedFunction
       $mdThemingProvider.theme('dark')
-          .dark()
-          .accentPalette('grey', {
-            'default': '200'
-          })
-          .primaryPalette('orange', {
-            'default': '800'
-          })
-          .backgroundPalette('black');
+        .dark()
+        .accentPalette('grey', {
+          'default': '200'
+        })
+        .primaryPalette('orange', {
+          'default': '800'
+        })
+        .backgroundPalette('black');
 
       $mdThemingProvider.setDefaultTheme('dark');
     }
@@ -54,7 +54,8 @@
     "tabs",
     "$q",
     "$timeout",
-    function ($scope, execute, tabs, $q, $timeout) {
+    "config",
+    function ($scope, execute, tabs, $q, $timeout, config) {
       var storage = localStorage || {};
 
       $q.wait = function (time, arg) {
@@ -103,12 +104,12 @@
       });
 
       $scope.$watchGroup(["selectedIndex", "tabs.length"], function () {
-        $timeout(function (){
-          if($scope.tabs.length > 0){
+        $timeout(function () {
+          if ($scope.tabs.length > 0) {
             if ($scope.selectedIndex === $scope.tabs.length) {
               $scope.selectedIndex--;
             }
-            if($scope.selectedIndex < 0 || $scope.selectedIndex > $scope.tabs.length){
+            if ($scope.selectedIndex < 0 || $scope.selectedIndex > $scope.tabs.length) {
               $scope.selectedIndex = 0;
             }
           } else {

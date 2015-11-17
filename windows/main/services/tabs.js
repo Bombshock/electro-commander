@@ -4,6 +4,7 @@
   'use strict';
 
   var fs = require("fs");
+  var currentWindow = require("remote").getCurrentWindow();
 
   angular.module("app").provider("tabs", tabsProvider);
 
@@ -33,8 +34,8 @@
       return tab.name || out || tab.cwd;
     }
 
-    tabsService.$inject = ["mainProcess", "debounce", "kill"];
-    function tabsService(mainProcess, debounce, kill) {
+    tabsService.$inject = ["mainProcess", "debounce", "kill", "config"];
+    function tabsService(mainProcess, debounce, kill, config) {
       var tabs = getStoreage();
 
       tabs.new = newTab;
@@ -94,6 +95,17 @@
           });
         }
         fs.writeFileSync(__dirname + "\\..\\conf\\tabs.json", JSON.stringify(toSave, null, 2));
+      }
+
+      window.addEventListener('beforeunload', beforeUnload);
+      currentWindow.on("close", beforeUnload);
+      function beforeUnload() {
+        if (config.general && config.general.rememberTabs === false) {
+          while (tabs.length > 0) {
+            tabs.remove(tabs[0]);
+          }
+          tabs.save();
+        }
       }
 
       return tabs;

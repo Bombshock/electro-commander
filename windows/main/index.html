@@ -18,6 +18,16 @@
 <body ng-controller="AppController" layout="column" ng-cloak="">
 
 <div ng-cloak id="button-overlay" layout="column" layout-align="start end">
+
+    <div class="fade-in">
+        <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.configModal($event)">
+            <md-tooltip md-direction="left">
+                Config
+            </md-tooltip>
+            <md-icon class="fa fa-cogs"></md-icon>
+        </md-button>
+    </div>
+
     <div ng-show="$root.activeTab.packageJson && !$root.activeTab.child" class="fade-in">
         <md-menu md-position-mode="target-right target">
             <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">

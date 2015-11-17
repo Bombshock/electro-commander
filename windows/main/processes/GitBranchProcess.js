@@ -12,9 +12,9 @@
 
   angular.module("app").run(GitBranchProcess);
 
-  GitBranchProcess.$inject = ["mainProcess", "$timeout", "$rootScope", "$mdDialog", "$q", "debounce"];
+  GitBranchProcess.$inject = ["mainProcess", "$rootScope", "$mdDialog", "debounce"];
 
-  function GitBranchProcess(mainProcess, $timeout, $rootScope, $mdDialog, $q, debounce) {
+  function GitBranchProcess(mainProcess, $rootScope, $mdDialog, debounce) {
 
     $rootScope.gitModal = gitModal;
     $rootScope.gitModalOpened = false;
@@ -203,7 +203,7 @@
               });
 
           return branches;
-        })
+        });
   }
 
   function getChanges(tab) {

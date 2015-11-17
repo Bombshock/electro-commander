@@ -5,7 +5,6 @@
 
   var Q = require("q");
   var child_process = require("child_process");
-  var readline = require('readline');
 
   angular.module("app").service("execute", executeService);
 
@@ -45,8 +44,6 @@
 
       cwd = cwd || tab.cwd;
 
-      console.log("submit", input);
-
       if (tab.history[tab.history.length - 1] !== input) {
         tab.history.push(input);
       }
@@ -65,13 +62,13 @@
 
       if (bin in bash) {
         Q.when(bash[bin].apply(bash[bin], [args, stdout, stderr, tab]))
-            .finally(function () {
-              mainProcess.$emit("cycle");
-            });
+          .finally(function () {
+            mainProcess.$emit("cycle");
+          });
       } else {
         args.unshift(bin);
         args = ["/s", "/c"].concat(args);
-        console.log("args", args);
+        console.log("EXECUTE ::", "cmd", args.join(" "));
         // cmd "/s", "/c"
         // PowerShell "-NoProfile", "-NonInteractive", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command"
         tab.child = spawn("cmd", args, {
@@ -86,6 +83,17 @@
         tab.child.on('message', stdout);
         tab.child.stdout.on('data', stdout);
         tab.child.stderr.on('data', stderr);
+
+        for (var j = 0; j < tab.child.stdio.length; j++) {
+          var io = tab.child.stdio[j];
+          if (io) {
+            io.on('readable', createBufferReader("stdio[" + j + "].readable"));
+            io.on('data', createBufferReader("stdio[" + j + "].data"));
+            io.on('end', createBufferReader("stdio[" + j + "].end"));
+            io.on('close', createBufferReader("stdio[" + j + "].close"));
+            io.on('error', createBufferReader("stdio[" + j + "].error"));
+          }
+        }
 
         tab.child.on('close', function (code) {
           console.log('child process exited with code ' + code);
@@ -136,6 +144,12 @@
         }
 
         mainProcess.$emit("cycle");
+      }
+
+      function createBufferReader(name) {
+        return function (buffer) {
+          console.log("BUFFER :: %s:", name, buffer ? buffer.toString() : arguments);
+        };
       }
     }
 

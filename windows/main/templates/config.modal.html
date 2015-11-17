@@ -1,0 +1,47 @@
+<md-dialog aria-label="config" style="width: 90%; height: 90%; max-width: 800px; max-height: 800px;">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <md-icon class="fa fa-cogs" style="margin-right: 25px;"></md-icon>
+            <h2 style="margin-top: 5px;">
+                Config
+            </h2>
+            <span flex></span>
+
+            <md-button class="md-icon-button" ng-click="cancel()">
+                <md-icon class="fa fa-times" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content flex layout="row">
+
+        <md-list flex>
+            <md-subheader class="md-no-sticky md-primary">Behaviour</md-subheader>
+            <md-list-item class="no-select">
+                <p> Exit to tray </p>
+                <md-switch class="md-primary" ng-model="config.general.exitToTray"></md-switch>
+            </md-list-item>
+            <md-list-item class="no-select">
+                <p> Remember open Tabs </p>
+                <md-switch class="md-primary" ng-model="config.general.rememberTabs"></md-switch>
+            </md-list-item>
+
+            <md-divider></md-divider>
+            <md-subheader class="md-no-sticky md-primary">Windows integration</md-subheader>
+            <md-list-item class="no-select">
+                <p> Start with windows </p>
+                <md-switch class="md-primary" ng-model="config.windows.autostart"></md-switch>
+            </md-list-item>
+            <md-list-item class="no-select">
+                <p> Context menu </p>
+                <md-switch class="md-primary" ng-model="config.windows.contextMenu"></md-switch>
+            </md-list-item>
+        </md-list>
+
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+        <span flex></span>
+        <md-button ng-click="cancel()">
+            ok
+        </md-button>
+    </md-dialog-actions>
+</md-dialog>

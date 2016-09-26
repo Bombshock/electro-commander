@@ -4,17 +4,14 @@
   'use strict';
 
   var Q = require("q");
-  var child_process = require("child_process");
+  var remote = require("remote");
+  var child_process = remote.require("child_process");
 
   angular.module("app").service("execute", executeService);
 
   executeService.$inject = ["CMDMessage", "bash", "mainProcess"];
 
   function executeService(CMDMessage, bash, mainProcess) {
-
-    function spawn() {
-      return child_process.spawn.apply(child_process, arguments);
-    }
 
     function execute(line, tab, cwd) {
       var input = line;
@@ -66,12 +63,13 @@
             mainProcess.$emit("cycle");
           });
       } else {
-        args.unshift(bin);
-        args = ["/s", "/c"].concat(args);
-        console.log("EXECUTE ::", "cmd", args.join(" "));
         // cmd "/s", "/c"
         // PowerShell "-NoProfile", "-NonInteractive", "-NoLogo", "-ExecutionPolicy", "Bypass", "-Command"
-        tab.child = spawn("cmd", args, {
+        args.unshift(bin);
+        args = ["/S", "/C"].concat(args);
+
+        console.log("EXECUTE ::", "cmd", args.join(" "));
+        tab.child = child_process.spawn("cmd", args, {
           cwd: cwd
         });
 
@@ -80,7 +78,9 @@
         tab.child.cwd = tab.cwd;
         tab.child.msg = message;
 
-        tab.child.on('message', stdout);
+        tab.child.stderr.setEncoding('utf8');
+        tab.child.stdout.setEncoding('utf8');
+
         tab.child.stdout.on('data', stdout);
         tab.child.stderr.on('data', stderr);
 
@@ -145,15 +145,15 @@
 
         mainProcess.$emit("cycle");
       }
-
-      function createBufferReader(name) {
-        return function (buffer) {
-          console.log("BUFFER :: %s:", name, buffer ? buffer.toString() : arguments);
-        };
-      }
     }
 
     return execute;
+  }
+
+  function createBufferReader(name) {
+    return function (buffer) {
+      console.log("BUFFER :: %s:", name, buffer ? buffer.toString() : arguments);
+    };
   }
 
 })();

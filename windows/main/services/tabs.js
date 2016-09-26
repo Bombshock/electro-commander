@@ -65,6 +65,9 @@
           if (tab.child) {
             kill(tab.child.pid);
           }
+          if (tab.cwdWatcher) {
+            tab.cwdWatcher.close();
+          }
           mainProcess.$emit("cycle");
         }
         console.log("tabs.remove :: index: %s | tab: %o", index, tab);

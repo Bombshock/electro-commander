@@ -32,6 +32,9 @@
       var open = 0;
       var replaced = this.message;
 
+      replaced = replaced.replace(/</g, "&lt;");
+      replaced = replaced.replace(/>/g, "&gt;");
+
       replaced = replaced.replace(/\x1b*\[\d+m/ig, function (found) {
         var int = /\d+/.exec(found)[0];
         int = parseInt(int);

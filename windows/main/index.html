@@ -1,4 +1,5 @@
 <html lang="en" ng-app="app">
+
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../../bower_components/angular-material/angular-material.css">
@@ -6,185 +7,192 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=RobotoDraft:300,400,500,700,400italic">
 
-    <meta name="viewport" content="initial-scale=1"/>
+    <meta name="viewport" content="initial-scale=1" />
     <link rel="stylesheet" href="style.css">
 
     <style>
-        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+        [ng\:cloak],
+        [ng-cloak],
+        [data-ng-cloak],
+        [x-ng-cloak],
+        .ng-cloak,
+        .x-ng-cloak {
             display: none !important;
         }
     </style>
 </head>
+
 <body ng-controller="AppController" layout="column" ng-cloak="">
 
-<div ng-cloak id="button-overlay" layout="column" layout-align="start end">
+    <div ng-cloak id="button-overlay" layout="column" layout-align="start end">
 
-    <div class="fade-in">
-        <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.configModal($event)">
-            <md-tooltip md-direction="left">
-                Config
-            </md-tooltip>
-            <md-icon class="fa fa-cogs"></md-icon>
-        </md-button>
-    </div>
-
-    <div ng-show="$root.activeTab.packageJson && !$root.activeTab.child" class="fade-in">
-        <md-menu md-position-mode="target-right target">
-            <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+        <div class="fade-in">
+            <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.configModal($event)">
                 <md-tooltip md-direction="left">
-                    NodeJS
+                    Config
                 </md-tooltip>
-                <img src="../../resources/nodejs-logo.png" style="max-width: 30px; max-height: 30px;">
+                <md-icon class="fa fa-cogs"></md-icon>
             </md-button>
-            <md-menu-content width="4">
-                <md-menu-item ng-repeat-start="(scriptName, script) in $root.activeTab.packageJson.scripts">
-                    <md-button ng-click="execute(script, $root.activeTab)">
-                        <md-icon class="fa fa-play"></md-icon>
-                        {{scriptName}}
-                    </md-button>
-                </md-menu-item>
-                <md-menu-divider ng-repeat-end ng-if="$last"></md-menu-divider>
-                <md-menu-item>
-                    <md-button ng-click="execute('npm update', $root.activeTab)">
-                        <md-icon class="fa fa-cog"></md-icon>
-                        Update
-                    </md-button>
-                </md-menu-item>
-                <md-menu-item>
-                    <md-button ng-click="execute('npm install', $root.activeTab)">
-                        <md-icon class="fa fa-cog"></md-icon>
-                        Install
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content>
-        </md-menu>
-    </div>
+        </div>
 
-    <div ng-show="$root.activeTab.bowerJson && !$root.activeTab.child" class="fade-in">
-        <md-menu md-position-mode="target-right target">
-            <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+        <div ng-show="$root.activeTab.packageJson && !$root.activeTab.child" class="fade-in">
+            <md-menu md-position-mode="target-right target">
+                <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+                    <md-tooltip md-direction="left">
+                        NodeJS
+                    </md-tooltip>
+                    <img src="../../resources/nodejs-logo.png" style="max-width: 30px; max-height: 30px;">
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item ng-repeat-start="(scriptName, script) in $root.activeTab.packageJson.scripts">
+                        <md-button ng-click="execute(script, $root.activeTab)">
+                            <md-icon class="fa fa-play"></md-icon>
+                            {{scriptName}}
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-divider ng-repeat-end ng-if="$last"></md-menu-divider>
+                    <md-menu-item>
+                        <md-button ng-click="execute('npm update', $root.activeTab)">
+                            <md-icon class="fa fa-cog"></md-icon>
+                            Update
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="execute('npm install', $root.activeTab)">
+                            <md-icon class="fa fa-cog"></md-icon>
+                            Install
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+
+        <div ng-show="$root.activeTab.bowerJson && !$root.activeTab.child" class="fade-in">
+            <md-menu md-position-mode="target-right target">
+                <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+                    <md-tooltip md-direction="left">
+                        Bower
+                    </md-tooltip>
+                    <img src="../../resources/bower-logo.png" style="max-width: 30px; max-height: 30px;">
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item>
+                        <md-button ng-click="execute('bower update', $root.activeTab)">
+                            <md-icon class="fa fa-cog"></md-icon>
+                            Update
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-item>
+                        <md-button ng-click="execute('bower install', $root.activeTab)">
+                            <md-icon class="fa fa-cog"></md-icon>
+                            Install
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+        </div>
+
+        <div ng-show="$root.activeTab.grunt && !$root.activeTab.child" class="fade-in">
+            <md-menu md-position-mode="target-right target">
+                <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+                    <md-tooltip md-direction="left">
+                        Grunt
+                    </md-tooltip>
+                    GRT
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item ng-repeat-start="(taskName, task) in $root.activeTab.grunt.task._tasks">
+                        <md-button ng-click="execute('grunt ' + taskName, $root.activeTab)">
+                            <md-icon class="fa fa-play"></md-icon>
+                            {{taskName}}
+                        </md-button>
+                    </md-menu-item>
+                    <md-menu-divider ng-repeat-end ng-if="$last"></md-menu-divider>
+                </md-menu-content>
+            </md-menu>
+        </div>
+
+        <div ng-show="$root.activeTab.git" md-theme="github" class="fade-in">
+            <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.gitModal($event, $root.activeTab)">
                 <md-tooltip md-direction="left">
-                    Bower
+                    Git
                 </md-tooltip>
-                <img src="../../resources/bower-logo.png" style="max-width: 30px; max-height: 30px;">
+                <md-icon class="fa fa-github"></md-icon>
             </md-button>
-            <md-menu-content width="4">
-                <md-menu-item>
-                    <md-button ng-click="execute('bower update', $root.activeTab)">
-                        <md-icon class="fa fa-cog"></md-icon>
-                        Update
-                    </md-button>
-                </md-menu-item>
-                <md-menu-item>
-                    <md-button ng-click="execute('bower install', $root.activeTab)">
-                        <md-icon class="fa fa-cog"></md-icon>
-                        Install
-                    </md-button>
-                </md-menu-item>
-            </md-menu-content>
-        </md-menu>
-    </div>
+        </div>
 
-    <div ng-show="$root.activeTab.grunt && !$root.activeTab.child" class="fade-in">
-        <md-menu md-position-mode="target-right target">
-            <md-button aria-label="npm menu" class="md-fab md-primary" ng-click="openMenu($mdOpenMenu, $event)">
+        <div ng-show="$root.hasVSCode" md-theme="github" class="fade-in">
+            <md-button aria-label="open code here" class="md-fab md-primary" ng-click="execute('code .', $root.activeTab)">
                 <md-tooltip md-direction="left">
-                    Grunt
+                    VS Code
                 </md-tooltip>
-                GRT
+                <img src="../../resources/vs-code-logo.png" style="max-width: 30px; max-height: 30px;">
             </md-button>
-            <md-menu-content width="4">
-                <md-menu-item ng-repeat-start="(taskName, task) in $root.activeTab.grunt.task._tasks">
-                    <md-button ng-click="execute('grunt ' + taskName, $root.activeTab)">
-                        <md-icon class="fa fa-play"></md-icon>
-                        {{taskName}}
-                    </md-button>
-                </md-menu-item>
-                <md-menu-divider ng-repeat-end ng-if="$last"></md-menu-divider>
-            </md-menu-content>
-        </md-menu>
+        </div>
+
+        <md-fab-speed-dial class="md-scale fade-in" md-open="$root.fabSpeedDial.isOpen" md-direction="left" ng-mouseenter="$root.fabSpeedDial.isOpen = true"
+            ng-mouseleave="$root.fabSpeedDial.isOpen = false" ng-class="" ng-hide="!$root.activeTab.child">
+            <md-fab-trigger>
+                <md-button aria-label="menu" class="md-fab md-warn">
+                    <md-icon class="fa fa-play"></md-icon>
+                </md-button>
+            </md-fab-trigger>
+            <md-fab-actions>
+                <md-button aria-label="replay" class="md-fab md-raised md-mini" ng-click="$root.restartTabChild(activeTab)">
+                    <md-icon class="fa fa-repeat" aria-label="replay"></md-icon>
+                </md-button>
+                <md-button aria-label="stop" class="md-fab md-raised md-mini" ng-click="$root.killTabChild(activeTab)">
+                    <md-icon class="fa fa-stop" aria-label="stop"></md-icon>
+                </md-button>
+            </md-fab-actions>
+        </md-fab-speed-dial>
     </div>
 
-    <div ng-show="$root.activeTab.git" md-theme="github" class="fade-in">
-        <md-button aria-label="add" class="md-fab md-primary" ng-click="$root.gitModal($event, $root.activeTab)">
-            <md-tooltip md-direction="left">
-                Git
-            </md-tooltip>
-            <md-icon class="fa fa-github"></md-icon>
-        </md-button>
-    </div>
+    <md-tabs ng-cloak md-selected="$root.selectedIndex" md-border-bottom md-autoselect flex id="tabs" scroll-down-tabs>
+        <md-tab ng-repeat="tab in $root.tabs" ng-class="{'monospace': !tab.name}" flex flex-grow scroll-down ec-tab>
+            <md-tab-label>
+                {{tab.$name + (tab.child.bin ? ' [' + tab.child.bin + ']' : '')}}
 
-    <md-fab-speed-dial class="md-scale fade-in"
-                       md-open="$root.fabSpeedDial.isOpen"
-                       md-direction="left"
-                       ng-mouseenter="$root.fabSpeedDial.isOpen = true"
-                       ng-mouseleave="$root.fabSpeedDial.isOpen = false"
-                       ng-class=""
-                       ng-hide="!$root.activeTab.child">
-        <md-fab-trigger>
-            <md-button aria-label="menu" class="md-fab md-warn">
-                <md-icon class="fa fa-play"></md-icon>
-            </md-button>
-        </md-fab-trigger>
-        <md-fab-actions>
-            <md-button aria-label="replay" class="md-fab md-raised md-mini"
-                       ng-click="$root.restartTabChild(activeTab)">
-                <md-icon class="fa fa-repeat" aria-label="replay"></md-icon>
-            </md-button>
-            <md-button aria-label="stop" class="md-fab md-raised md-mini" ng-click="$root.killTabChild(activeTab)">
-                <md-icon class="fa fa-stop" aria-label="stop"></md-icon>
-            </md-button>
-        </md-fab-actions>
-    </md-fab-speed-dial>
-</div>
-
-<md-tabs ng-cloak md-selected="$root.selectedIndex" md-border-bottom md-autoselect flex id="tabs" scroll-down-tabs>
-    <md-tab ng-repeat="tab in $root.tabs" ng-class="{'monospace': !tab.name}" flex flex-grow scroll-down ec-tab>
-        <md-tab-label>
-            {{tab.$name + (tab.child.bin ? ' [' + tab.child.bin + ']' : '')}}
-
-            <md-button
-                    style="  margin: -5px 0 0 0; min-width: 40px; padding: 0; position: relative; top: -1px; right: -15px;"
-                    ng-click="tabs.remove(tab)"
+                <md-button style="  margin: -5px 0 0 0; min-width: 40px; padding: 0; position: relative; top: -1px; right: -15px;" ng-click="tabs.remove(tab)"
                     aria-label="close tab">
-                <md-icon class="fa fa-times-circle"></md-icon>
-            </md-button>
-        </md-tab-label>
-        <md-tab-body>
-            <div class="console monospace">
-                <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
-            </div>
-        </md-tab-body>
-    </md-tab>
-    <md-tab ng-click="$event.preventDefault(); tabs.new()">
-        <md-tab-label>
-            <md-icon class="fa fa-plus-circle"></md-icon>
-        </md-tab-label>
-        <md-tab-content>
-            you shouldn't see this o.O
-        </md-tab-content>
-    </md-tab>
-</md-tabs>
+                    <md-icon class="fa fa-times-circle"></md-icon>
+                </md-button>
+            </md-tab-label>
+            <md-tab-body>
+                <div class="console monospace">
+                    <pre data-ng-repeat="line in tab.lines" class="{{line.type}}" ng-bind-html="line.toString()"></pre>
+                </div>
+            </md-tab-body>
+        </md-tab>
+        <md-tab ng-click="$event.preventDefault(); tabs.new()">
+            <md-tab-label>
+                <md-icon class="fa fa-plus-circle"></md-icon>
+            </md-tab-label>
+            <md-tab-content>
+                you shouldn't see this o.O
+            </md-tab-content>
+        </md-tab>
+    </md-tabs>
 
-<div ng-cloak class="input monospace" layout="row"
-     ng-show="!$root.activeTab.child && !$root.activeTab.type && $root.tabs.length > 0">
+    <div ng-cloak class="input monospace" layout="row" ng-show="!$root.activeTab.child && !$root.activeTab.type && $root.tabs.length > 0">
 
-    <label for="THE_FUCKING_INPUT">
+        <label for="THE_FUCKING_INPUT">
         {{$root.activeTab.cwd}}
         <span id="git-branch-picker" ng-show="$root.activeTab.git.branch"> [{{$root.activeTab.git.branch.name}}] </span>
         >
     </label>
 
-    <input ng-model="activeTab.input" id="THE_FUCKING_INPUT" ng-keyup="submit($event, $root.activeTab)" flex type="text" tab-input>
-</div>
+        <input ng-model="activeTab.input" id="THE_FUCKING_INPUT" ng-keyup="submit($event, $root.activeTab)" flex type="text" tab-input>
+    </div>
 
-<!-- Angular Material Dependencies -->
-<script src="../../bower_components/angular/angular.js"></script>
-<script src="../../bower_components/angular-animate/angular-animate.js"></script>
-<script src="../../bower_components/angular-aria/angular-aria.js"></script>
-<script src="../../bower_components/angular-material/angular-material.js"></script>
+    <!-- Angular Material Dependencies -->
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../bower_components/angular-animate/angular-animate.js"></script>
+    <script src="../../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../../bower_components/angular-material/angular-material.js"></script>
 
-<script src="app.js"></script>
+    <script src="app.js"></script>
 
 </body>
+
 </html>
